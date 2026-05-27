@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { computed, reactive, ref, watch } from "vue";
 import { DEFAULT_SETTINGS } from "../constants/settings";
 import { normalizeSettings, readSettings, writeSettings } from "../services/settings.service";
+import type { AiProviderId } from "../types/ai-provider";
 import type { AppSettings } from "../types/settings";
 
 type SaveState = "idle" | "saving" | "saved" | "error";
@@ -16,6 +17,12 @@ function replaceSettings(target: AppSettings, next: AppSettings) {
   Object.assign(target.workspace, next.workspace);
   Object.assign(target.graph, next.graph);
   Object.assign(target.data, next.data);
+  target.ai.defaultProvider = next.ai.defaultProvider;
+  const nextProviders = next.ai.providers;
+  const targetProviders = target.ai.providers;
+  for (const id of Object.keys(nextProviders) as AiProviderId[]) {
+    Object.assign(targetProviders[id], nextProviders[id]);
+  }
 }
 
 function resolveTheme(settings: AppSettings) {

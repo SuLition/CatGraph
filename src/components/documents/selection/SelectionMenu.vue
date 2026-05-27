@@ -54,10 +54,10 @@ function isDisabled(id: SelectionMenuAction["id"]): boolean {
   z-index: 9999;
   display: flex;
   align-items: stretch;
-  background: rgb(30 30 30 / 95%);
-  color: #fff;
+  background: rgb(255 255 255 / 96%);
+  color: #222;
   border-radius: 6px;
-  box-shadow: 0 6px 24px rgb(0 0 0 / 25%);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 10%), 0 1px 3px rgb(0 0 0 / 6%);
   overflow: hidden;
   transform: translateX(-50%);
   font-size: 12px;
@@ -73,15 +73,15 @@ function isDisabled(id: SelectionMenuAction["id"]): boolean {
 }
 
 .menu-item:hover:not(:disabled) {
-  background: rgb(255 255 255 / 12%);
+  background: rgb(0 0 0 / 6%);
 }
 
 .menu-item:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .menu-item + .menu-item {
-  border-left: 1px solid rgb(255 255 255 / 15%);
+  border-left: 1px solid rgb(0 0 0 / 10%);
 }
 </style>

@@ -21,6 +21,25 @@ pub struct ProviderTestResult {
     pub message: String,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ChatCompletionArgs {
+    pub provider: String,
+    pub api_key: String,
+    pub base_url: String,
+    pub model: String,
+    pub system: String,
+    pub user: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ChatCompletionResult {
+    pub success: bool,
+    pub text: String,
+    pub error: String,
+}
+
 fn trim_trailing_slash(value: &str) -> &str {
     value.trim_end_matches('/')
 }
@@ -109,6 +128,143 @@ pub async fn test_ai_provider(args: TestProviderArgs) -> Result<ProviderTestResu
             None => format!("已连通 · {latency_ms} ms"),
         },
     })
+}
+
+#[tauri::command]
+pub async fn chat_completion(args: ChatCompletionArgs) -> Result<ChatCompletionResult, String> {
+    let key = args.api_key.trim();
+    if key.is_empty() {
+        return Ok(ChatCompletionResult {
+            success: false,
+            text: String::new(),
+            error: "未填写 API Key".to_string(),
+        });
+    }
+
+    let base = trim_trailing_slash(args.base_url.trim());
+    if base.is_empty() {
+        return Ok(ChatCompletionResult {
+            success: false,
+            text: String::new(),
+            error: "未解析到 Base URL".to_string(),
+        });
+    }
+
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(60))
+        .build()
+        .map_err(|err| format!("failed to build http client: {err}"))?;
+
+    match args.provider.as_str() {
+        "openai" | "deepseek" => {
+            let body = serde_json::json!({
+                "model": args.model.trim(),
+                "messages": [
+                    { "role": "system", "content": args.system },
+                    { "role": "user", "content": args.user }
+                ],
+                "max_tokens": 4096,
+                "temperature": 0.3,
+            });
+
+            let response = client
+                .post(format!("{base}/chat/completions"))
+                .header("Authorization", format!("Bearer {key}"))
+                .json(&body)
+                .send()
+                .await
+                .map_err(|err| format!("请求失败: {}", short_error(&err)))?;
+
+            if !response.status().is_success() {
+                let status = response.status().as_u16();
+                let snippet = response
+                    .text()
+                    .await
+                    .unwrap_or_default()
+                    .chars()
+                    .take(300)
+                    .collect::<String>();
+                return Ok(ChatCompletionResult {
+                    success: false,
+                    text: String::new(),
+                    error: format!("HTTP {} · {}", status, snippet.trim()),
+                });
+            }
+
+            let body: serde_json::Value = response
+                .json()
+                .await
+                .map_err(|err| format!("解析响应失败: {err}"))?;
+
+            let text = body["choices"][0]["message"]["content"]
+                .as_str()
+                .unwrap_or("")
+                .to_string();
+
+            Ok(ChatCompletionResult {
+                success: true,
+                text,
+                error: String::new(),
+            })
+        }
+        "claude" => {
+            let body = serde_json::json!({
+                "model": args.model.trim(),
+                "max_tokens": 4096,
+                "system": args.system,
+                "messages": [
+                    { "role": "user", "content": args.user }
+                ],
+                "temperature": 0.3,
+            });
+
+            let response = client
+                .post(format!("{base}/v1/messages"))
+                .header("x-api-key", key)
+                .header("anthropic-version", "2023-06-01")
+                .json(&body)
+                .send()
+                .await
+                .map_err(|err| format!("请求失败: {}", short_error(&err)))?;
+
+            if !response.status().is_success() {
+                let status = response.status().as_u16();
+                let snippet = response
+                    .text()
+                    .await
+                    .unwrap_or_default()
+                    .chars()
+                    .take(300)
+                    .collect::<String>();
+                return Ok(ChatCompletionResult {
+                    success: false,
+                    text: String::new(),
+                    error: format!("HTTP {} · {}", status, snippet.trim()),
+                });
+            }
+
+            let body: serde_json::Value = response
+                .json()
+                .await
+                .map_err(|err| format!("解析响应失败: {err}"))?;
+
+            let text = body["content"][0]["text"]
+                .as_str()
+                .unwrap_or("")
+                .to_string();
+
+            Ok(ChatCompletionResult {
+                success: true,
+                text,
+                error: String::new(),
+            })
+        }
+        other => Ok(ChatCompletionResult {
+            success: false,
+            text: String::new(),
+            error: format!("未知服务商: {other}"),
+        }),
+    }
 }
 
 fn parse_model_count(body: &str) -> Option<usize> {

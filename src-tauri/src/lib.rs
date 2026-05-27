@@ -118,7 +118,8 @@ pub fn run() {
             documents::list_snippets,
             documents::save_snippet,
             documents::delete_snippet,
-            ai::test_ai_provider
+            ai::test_ai_provider,
+            ai::chat_completion
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

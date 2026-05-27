@@ -33,10 +33,10 @@ export async function dispatchSelectionAction(
     return;
   }
 
-  const labels: Record<Exclude<SelectionActionId, "add-to-snippets">, string> = {
+  const labels: Record<Exclude<SelectionActionId, "add-to-snippets" | "translate">, string> = {
     "ask-ai": "询问 AI",
-    translate: "翻译",
     search: "搜索",
   };
+  if (id === "translate") return;
   toast.push(`${labels[id]} 功能待接入`, "info");
 }

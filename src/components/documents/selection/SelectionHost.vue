@@ -2,7 +2,9 @@
 import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
 import { computePdfAnchor, computeTextAnchor } from "./anchor";
 import SelectionMenu from "./SelectionMenu.vue";
+import TranslationPopover from "./TranslationPopover.vue";
 import { dispatchSelectionAction, type SelectionActionId } from "./selection-actions";
+import { translateText } from "../../../services/ai-client.service";
 import type { SnippetAnchor, SnippetLocator } from "../../../types/snippet";
 
 const props = defineProps<{ documentId: string; mode: "pdf" | "text" }>();
@@ -14,6 +16,13 @@ const selectedText = ref("");
 const currentAnchor = ref<SnippetAnchor | null>(null);
 const disabledActions = ref<SelectionActionId[]>([]);
 const highlightRects = ref<{ left: number; top: number; width: number; height: number }[]>([]);
+
+const showPopover = ref(false);
+const popoverPos = ref({ x: 0, y: 0 });
+const popoverStatus = ref<"loading" | "ok" | "error">("loading");
+const translationResult = ref("");
+const translationMessage = ref("");
+const translationSourceText = ref("");
 
 const MENU_DELAY_MS = 450;
 const MENU_MARGIN_PX = 12;
@@ -39,6 +48,13 @@ function clearMenu() {
   currentAnchor.value = null;
   disabledActions.value = [];
   highlightRects.value = [];
+}
+
+function closePopover() {
+  showPopover.value = false;
+  translationResult.value = "";
+  translationMessage.value = "";
+  translationSourceText.value = "";
 }
 
 function computeAnchor(range: Range): SnippetLocator | null {
@@ -210,6 +226,7 @@ function scheduleEvaluateSelection() {
 function onRootPointerDown() {
   isPointerSelecting = true;
   clearMenu();
+  closePopover();
 }
 
 function onPointerUp(event: PointerEvent) {
@@ -220,6 +237,12 @@ function onPointerUp(event: PointerEvent) {
 }
 
 function onMouseDown(event: MouseEvent) {
+  if (showPopover.value) {
+    const target = event.target as Node | null;
+    if (target && root.value && root.value.contains(target)) return;
+    closePopover();
+    return;
+  }
   if (!showMenu.value) return;
   const target = event.target as Node | null;
   if (target && root.value && root.value.contains(target)) return;
@@ -228,22 +251,55 @@ function onMouseDown(event: MouseEvent) {
 
 function onScroll(event: Event) {
   const target = event.target as Node | null;
-  if (target && root.value?.contains(target)) clearMenu();
+  if (target && root.value?.contains(target)) {
+    clearMenu();
+    closePopover();
+  }
 }
 
 function onKeyDown(event: KeyboardEvent) {
-  if (event.key === "Escape") clearMenu();
+  if (event.key === "Escape") {
+    clearMenu();
+    closePopover();
+  }
 }
 
 function onProgrammaticSelection() {
   suppressSelectionMenuUntil = performance.now() + 2200;
   clearMenu();
+  closePopover();
 }
 
 function handleAction(id: SelectionActionId) {
+  if (id === "translate") {
+    const text = selectedText.value;
+    popoverPos.value = { ...menuPos.value };
+    translationSourceText.value = text;
+    clearMenu();
+    showPopover.value = true;
+    popoverStatus.value = "loading";
+    translationResult.value = "";
+    translationMessage.value = "";
+    void runTranslation(text);
+    return;
+  }
+
   const ctx = { text: selectedText.value, anchor: currentAnchor.value };
   clearMenu();
   void dispatchSelectionAction(id, ctx);
+}
+
+async function runTranslation(text: string) {
+  try {
+    const result = await translateText(text);
+    if (!showPopover.value) return;
+    translationResult.value = result;
+    popoverStatus.value = "ok";
+  } catch (err) {
+    if (!showPopover.value) return;
+    translationMessage.value = err instanceof Error ? err.message : String(err);
+    popoverStatus.value = "error";
+  }
 }
 
 onMounted(() => {
@@ -289,6 +345,16 @@ onBeforeUnmount(() => {
       :position="menuPos"
       :disabled-actions="disabledActions"
       @action="handleAction"
+    />
+    <TranslationPopover
+      v-if="showPopover"
+      :position="popoverPos"
+      :source-text="translationSourceText"
+      :status="popoverStatus"
+      :result="translationResult"
+      :message="translationMessage"
+      @retry="void runTranslation(translationSourceText)"
+      @close="closePopover"
     />
   </div>
 </template>
