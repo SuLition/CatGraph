@@ -1,41 +1,61 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import TitleBar from "./components/TitleBar.vue";
-import ActivityBar from "./components/ActivityBar.vue";
-import SideList from "./components/SideList.vue";
-import ContentArea from "./components/ContentArea.vue";
-import StatusBar from "./components/StatusBar.vue";
+import { onMounted, watchEffect } from "vue";
+import { useRoute } from "vue-router";
+import TitleBar from "./components/layout/TitleBar.vue";
+import ActivityBar from "./components/layout/ActivityBar.vue";
+import SideList from "./components/layout/SideList.vue";
+import ContentArea from "./components/layout/ContentArea.vue";
+import StatusBar from "./components/layout/StatusBar.vue";
+import { DEFAULT_NAV_ID } from "./constants/navigation";
+import { useSettingsStore } from "./stores/settings.store";
+import { useWorkspaceStore } from "./stores/workspace.store";
+import type { NavId } from "./types/navigation";
 
-const activeId = ref<string>("experiments");
-const selectedExperimentId = ref<string>("exp-base-inertia");
-const isSideListCollapsed = ref<boolean>(false);
+const route = useRoute();
+const workspace = useWorkspaceStore();
+const settingsStore = useSettingsStore();
 
-function handleNavSelect(id: string) {
-  activeId.value = id;
-}
+watchEffect(() => {
+  workspace.setActiveNavId((route.meta.navId as NavId | undefined) ?? DEFAULT_NAV_ID);
+});
 
-function handleExperimentSelect(id: string) {
-  selectedExperimentId.value = id;
-}
-
-function toggleSideList() {
-  isSideListCollapsed.value = !isSideListCollapsed.value;
-}
+onMounted(() => {
+  void settingsStore.loadSettings();
+});
 </script>
 
 <template>
-  <div class="window-frame">
-    <TitleBar :side-list-collapsed="isSideListCollapsed" @toggle-side-list="toggleSideList" />
+  <div
+    class="window-frame"
+    :class="[
+      `theme-${settingsStore.settings.appearance.theme}`,
+      `density-${settingsStore.settings.appearance.density}`,
+    ]"
+  >
+    <TitleBar
+      :side-list-collapsed="workspace.isSideListCollapsed"
+      @toggle-side-list="workspace.toggleSideList"
+    />
 
-    <main class="workspace" :class="{ 'is-side-list-collapsed': isSideListCollapsed }">
-      <ActivityBar :active-id="activeId" @select="handleNavSelect" />
+    <main
+      class="workspace"
+      :class="{
+        'is-side-list-collapsed': workspace.isSideListCollapsed || !workspace.shouldShowSideList,
+      }"
+    >
+      <ActivityBar />
       <div class="side-list-slot">
-        <SideList :selected-id="selectedExperimentId" @select="handleExperimentSelect" />
+        <SideList
+          v-if="workspace.shouldShowSideList"
+          :nav-id="workspace.activeNavId"
+          :selected-id="workspace.activeSideListId"
+          @select="workspace.setSelectedSideListItem"
+        />
       </div>
       <ContentArea />
     </main>
 
-    <StatusBar code="EXP-BI-001" />
+    <StatusBar :code="workspace.activeStatusCode" />
   </div>
 </template>
 

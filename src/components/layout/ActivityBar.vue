@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import {
   Beaker24Regular,
   BookInformation24Regular,
@@ -9,14 +9,17 @@ import {
   Settings24Regular,
 } from "@vicons/fluent";
 import type { Component } from "vue";
+import { useRouter } from "vue-router";
+import { useWorkspaceStore } from "../../stores/workspace.store";
+import type { NavId } from "../../types/navigation";
 
-export interface SidebarItem {
-  id: string;
+interface SidebarItem {
+  id: NavId;
   label: string;
   icon: Component;
 }
 
-export const sidebarItems: SidebarItem[] = [
+const sidebarItems: SidebarItem[] = [
   { id: "documents", label: "文档", icon: DocumentText24Regular },
   { id: "experiments", label: "试验", icon: Beaker24Regular },
   { id: "constants", label: "常量", icon: NumberSymbolSquare24Regular },
@@ -24,19 +27,13 @@ export const sidebarItems: SidebarItem[] = [
   { id: "references", label: "文献", icon: BookInformation24Regular },
   { id: "code", label: "代码", icon: Code24Regular },
 ];
-</script>
 
-<script setup lang="ts">
-defineProps<{
-  activeId: string;
-}>();
+const router = useRouter();
+const workspace = useWorkspaceStore();
 
-const emit = defineEmits<{
-  (e: "select", id: string): void;
-}>();
-
-function handleSelect(id: string) {
-  emit("select", id);
+function handleSelect(id: NavId) {
+  workspace.setActiveNavId(id);
+  void router.push({ name: id });
 }
 </script>
 
@@ -46,7 +43,7 @@ function handleSelect(id: string) {
       v-for="item in sidebarItems"
       :key="item.id"
       class="activity-button"
-      :class="{ 'is-active': activeId === item.id }"
+      :class="{ 'is-active': workspace.activeNavId === item.id }"
       :aria-label="item.label"
       type="button"
       @click="handleSelect(item.id)"
@@ -56,7 +53,13 @@ function handleSelect(id: string) {
 
     <div class="activity-spacer"></div>
 
-    <button class="activity-button" aria-label="设置" type="button">
+    <button
+      class="activity-button"
+      :class="{ 'is-active': workspace.activeNavId === 'settings' }"
+      aria-label="设置"
+      type="button"
+      @click="handleSelect('settings')"
+    >
       <Settings24Regular class="activity-icon" aria-hidden="true" />
     </button>
   </nav>
@@ -92,11 +95,11 @@ function handleSelect(id: string) {
 }
 
 .activity-button:hover {
-  background: #dcebf0;
+  background: var(--hover-color);
 }
 
 .activity-button.is-active {
-  color: #1a6b8a;
+  color: var(--accent-color);
   background: rgb(137 160 174 / 12%);
 }
 

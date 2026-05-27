@@ -194,11 +194,11 @@ function handleAppIconClick() {
 .nav-button:hover,
 .menu-item:hover,
 .window-control:hover {
-  background: #dcebf0;
+  background: var(--hover-color);
 }
 
 .app-icon.is-active {
-  color: #1a6b8a;
+  color: var(--accent-color);
   background: rgb(137 160 174 / 12%);
 }
 

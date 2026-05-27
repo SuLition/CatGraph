@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import BlueprintCanvas from "./blueprint/BlueprintCanvas.vue";
+import { RouterView } from "vue-router";
 </script>
 
 <template>
   <section class="content-area">
-    <BlueprintCanvas />
+    <RouterView />
   </section>
 </template>
 
