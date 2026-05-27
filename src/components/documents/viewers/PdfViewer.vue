@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, shallowRef, watch, type ComponentPublicInstance } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, watch, type ComponentPublicInstance } from "vue";
 import { VPdfViewer, ScrollMode, SelectionMode, ZoomLevel } from "@vue-pdf-viewer/viewer";
 import { useDocumentsStore } from "../../../stores/documents.store";
 import type { SnippetLocator } from "../../../types/snippet";
@@ -28,7 +28,7 @@ type PdfViewerPublic = ComponentPublicInstance & {
 
 const documents = useDocumentsStore();
 const viewerRef = ref<PdfViewerPublic | null>(null);
-const pdfSrc = shallowRef<Uint8Array | null>(null);
+const pdfSrc = ref<string | null>(null);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 const totalPages = ref(0);
@@ -40,18 +40,26 @@ const zoomLabel = computed(() =>
   currentScale.value ? `${Math.round(currentScale.value * 100)}%` : "适宽",
 );
 
+function releaseSrc() {
+  if (pdfSrc.value) {
+    URL.revokeObjectURL(pdfSrc.value);
+    pdfSrc.value = null;
+  }
+}
+
 async function loadPdf() {
   const currentLoad = ++loadId;
   isLoading.value = true;
   error.value = null;
-  pdfSrc.value = null;
+  releaseSrc();
   totalPages.value = 0;
   currentScale.value = null;
 
   try {
     const bytes = await documents.readBytes(props.documentId);
     if (currentLoad !== loadId) return;
-    pdfSrc.value = bytes.slice();
+    const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
+    pdfSrc.value = URL.createObjectURL(blob);
   } catch (e) {
     if (currentLoad === loadId) {
       error.value = e instanceof Error ? e.message : String(e);
@@ -59,6 +67,8 @@ async function loadPdf() {
     }
   }
 }
+
+onBeforeUnmount(releaseSrc);
 
 function handleLoaded(payload?: LoadedPayload) {
   totalPages.value = payload?.pageCount ?? viewerRef.value?.pageControl?.totalPages ?? 0;

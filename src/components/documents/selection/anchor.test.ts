@@ -83,4 +83,24 @@ describe("computePdfAnchor", () => {
 
     expect(computePdfAnchor(range)).toBeNull();
   });
+
+  it("accepts same-page selection when endpoints resolve via different page-tagged ancestors", () => {
+    const outer = document.createElement("div");
+    outer.className = "vpv-page-inner-container";
+    outer.dataset.pageIndex = "4";
+    const wrapper = document.createElement("div");
+    wrapper.className = "vpv-text-layer-wrapper pdf-text-layer";
+    wrapper.dataset.pageIndex = "4";
+    wrapper.innerHTML = "<span>abcdef</span><span>ghij</span>";
+    outer.appendChild(wrapper);
+    document.body.appendChild(outer);
+
+    const span = wrapper.querySelectorAll("span")[0].firstChild!;
+    const range = document.createRange();
+    range.setStart(span, 2);
+    range.setEnd(outer, outer.childNodes.length);
+
+    const anchor = computePdfAnchor(range);
+    expect(anchor).toEqual({ kind: "pdf", page: 5, charStart: 2, charEnd: 10 });
+  });
 });
