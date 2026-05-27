@@ -1,3 +1,4 @@
+mod ai;
 mod documents;
 
 use serde_json::{json, Value};
@@ -20,7 +21,8 @@ fn default_settings() -> Value {
         "workspace": {
             "defaultProjectPath": "",
             "restoreLastSession": true,
-            "autoSaveIntervalMinutes": 5
+            "autoSaveIntervalMinutes": 5,
+            "sideListWidth": 240
         },
         "graph": {
             "showGrid": true,
@@ -31,6 +33,29 @@ fn default_settings() -> Value {
         "data": {
             "storageFormat": "json",
             "backupOnSave": true
+        },
+        "ai": {
+            "defaultProvider": "",
+            "providers": {
+                "openai": {
+                    "enabled": false,
+                    "apiKey": "",
+                    "baseUrl": "",
+                    "defaultModel": "gpt-4o-mini"
+                },
+                "claude": {
+                    "enabled": false,
+                    "apiKey": "",
+                    "baseUrl": "",
+                    "defaultModel": "claude-sonnet-4-6"
+                },
+                "deepseek": {
+                    "enabled": false,
+                    "apiKey": "",
+                    "baseUrl": "",
+                    "defaultModel": "deepseek-chat"
+                }
+            }
         }
     })
 }
@@ -92,7 +117,8 @@ pub fn run() {
             documents::delete_document,
             documents::list_snippets,
             documents::save_snippet,
-            documents::delete_snippet
+            documents::delete_snippet,
+            ai::test_ai_provider
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

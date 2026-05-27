@@ -1,5 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
+import { PROVIDER_ORDER } from "../constants/ai-providers";
 import { DEFAULT_SETTINGS } from "../constants/settings";
+import type { AiProviderConfig, AiProviderId, AiSettings } from "../types/ai-provider";
 import type { AppSettings } from "../types/settings";
 
 const STORAGE_KEY = "catgraph.settings";
@@ -14,6 +16,37 @@ function isTauriRuntime() {
 function clampSideListWidth(value: number) {
   if (!Number.isFinite(value)) return DEFAULT_SETTINGS.workspace.sideListWidth;
   return Math.min(SIDE_LIST_MAX_WIDTH, Math.max(SIDE_LIST_MIN_WIDTH, Math.round(value)));
+}
+
+function normalizeProvider(
+  id: AiProviderId,
+  input: Partial<AiProviderConfig> | undefined,
+): AiProviderConfig {
+  const fallback = DEFAULT_SETTINGS.ai.providers[id];
+  return {
+    enabled: Boolean(input?.enabled ?? fallback.enabled),
+    apiKey: typeof input?.apiKey === "string" ? input.apiKey : fallback.apiKey,
+    baseUrl: typeof input?.baseUrl === "string" ? input.baseUrl : fallback.baseUrl,
+    defaultModel:
+      typeof input?.defaultModel === "string" && input.defaultModel.length > 0
+        ? input.defaultModel
+        : fallback.defaultModel,
+  };
+}
+
+function normalizeAi(input: Partial<AiSettings> | undefined): AiSettings {
+  const providers = {} as Record<AiProviderId, AiProviderConfig>;
+  for (const id of PROVIDER_ORDER) {
+    providers[id] = normalizeProvider(id, input?.providers?.[id]);
+  }
+
+  const validIds: (AiSettings["defaultProvider"])[] = [...PROVIDER_ORDER, ""];
+  const incomingDefault = input?.defaultProvider ?? "";
+  const defaultProvider = (validIds as string[]).includes(incomingDefault)
+    ? (incomingDefault as AiSettings["defaultProvider"])
+    : "";
+
+  return { defaultProvider, providers };
 }
 
 export function normalizeSettings(value: unknown): AppSettings {
@@ -45,6 +78,7 @@ export function normalizeSettings(value: unknown): AppSettings {
       ...(input?.data ?? {}),
       storageFormat: "json",
     },
+    ai: normalizeAi(input?.ai),
   };
 }
 

@@ -1,3 +1,4 @@
+import { PROVIDER_PRESETS } from "./ai-providers";
 import type { AppSettings } from "../types/settings";
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -22,5 +23,28 @@ export const DEFAULT_SETTINGS: AppSettings = {
   data: {
     storageFormat: "json",
     backupOnSave: true,
+  },
+  ai: {
+    defaultProvider: "",
+    providers: {
+      openai: {
+        enabled: false,
+        apiKey: "",
+        baseUrl: "",
+        defaultModel: PROVIDER_PRESETS.openai.defaultModel,
+      },
+      claude: {
+        enabled: false,
+        apiKey: "",
+        baseUrl: "",
+        defaultModel: PROVIDER_PRESETS.claude.defaultModel,
+      },
+      deepseek: {
+        enabled: false,
+        apiKey: "",
+        baseUrl: "",
+        defaultModel: PROVIDER_PRESETS.deepseek.defaultModel,
+      },
+    },
   },
 };

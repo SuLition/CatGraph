@@ -1,3 +1,5 @@
+import type { AiSettings } from "./ai-provider";
+
 export type ThemeMode = "system" | "light" | "dark";
 export type DensityMode = "comfortable" | "compact";
 export type NodeLabelMode = "full" | "compact" | "code";
@@ -25,4 +27,5 @@ export interface AppSettings {
     storageFormat: "json";
     backupOnSave: boolean;
   };
+  ai: AiSettings;
 }

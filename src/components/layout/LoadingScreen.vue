@@ -14,7 +14,7 @@ onMounted(() => {
 
 <template>
   <div class="loading-screen" :class="{ 'is-hiding': hiding }" aria-hidden="true">
-    <img class="loading-mark" src="/catgraph-logo.svg" alt="" />
+    <img class="loading-mark" src="/logos/cat-logo.svg" alt="" />
   </div>
 </template>
 
