@@ -1,18 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Handle, Position, type NodeProps } from "@vue-flow/core";
-import { TYPE_TOKENS, type NodeType } from "../../data/knowledge-graph";
+import { TYPE_TOKENS } from "../../types/common";
+import type { NodeType } from "../../types/common";
+import type { GraphNodeData } from "../../types/graph";
 import { useSettingsStore } from "../../stores/settings.store";
-
-interface GraphNodeData {
-  type: NodeType;
-  label: string;
-  sub: string;
-  big?: boolean;
-  emphasis?: boolean;
-  formula?: string;
-  footer?: string;
-}
 
 const props = defineProps<NodeProps<GraphNodeData>>();
 const settingsStore = useSettingsStore();

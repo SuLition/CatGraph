@@ -4,8 +4,16 @@ import type { AppSettings } from "../types/settings";
 
 const STORAGE_KEY = "catgraph.settings";
 
+export const SIDE_LIST_MIN_WIDTH = 180;
+export const SIDE_LIST_MAX_WIDTH = 480;
+
 function isTauriRuntime() {
   return "__TAURI_INTERNALS__" in window;
+}
+
+function clampSideListWidth(value: number) {
+  if (!Number.isFinite(value)) return DEFAULT_SETTINGS.workspace.sideListWidth;
+  return Math.min(SIDE_LIST_MAX_WIDTH, Math.max(SIDE_LIST_MIN_WIDTH, Math.round(value)));
 }
 
 export function normalizeSettings(value: unknown): AppSettings {
@@ -23,6 +31,9 @@ export function normalizeSettings(value: unknown): AppSettings {
       autoSaveIntervalMinutes: Number(
         input?.workspace?.autoSaveIntervalMinutes ??
           DEFAULT_SETTINGS.workspace.autoSaveIntervalMinutes,
+      ),
+      sideListWidth: clampSideListWidth(
+        Number(input?.workspace?.sideListWidth ?? DEFAULT_SETTINGS.workspace.sideListWidth),
       ),
     },
     graph: {

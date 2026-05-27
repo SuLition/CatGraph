@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Play20Regular } from "@vicons/fluent";
-import type { Experiment } from "../../data/knowledge-graph";
+import type { Experiment } from "../../types/experiment";
 
 defineProps<{
   experiment: Experiment;

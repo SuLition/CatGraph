@@ -31,6 +31,7 @@ function applyRuntimeSettings(settings: AppSettings) {
   root.dataset.theme = resolveTheme(settings);
   root.dataset.density = settings.appearance.density;
   root.style.setProperty("--accent-color", settings.appearance.accentColor);
+  root.style.setProperty("--side-list-width", `${settings.workspace.sideListWidth}px`);
 }
 
 export const useSettingsStore = defineStore("settings", () => {

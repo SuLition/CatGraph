@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
     defaultProjectPath: "",
     restoreLastSession: true,
     autoSaveIntervalMinutes: 5,
+    sideListWidth: 240,
   },
   graph: {
     showGrid: true,

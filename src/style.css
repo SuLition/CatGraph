@@ -71,3 +71,9 @@ button {
   overflow: hidden;
   background: transparent;
 }
+
+body.is-resizing-side-list,
+body.is-resizing-side-list * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}

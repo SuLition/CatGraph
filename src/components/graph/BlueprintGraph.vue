@@ -4,23 +4,14 @@ import { VueFlow, type Node, type Edge, type NodeMouseEvent } from "@vue-flow/co
 import { Background } from "@vue-flow/background";
 import { Controls } from "@vue-flow/controls";
 import { Layer24Regular } from "@vicons/fluent";
-import { TYPE_TOKENS, type NodeType } from "../../data/knowledge-graph";
+import { TYPE_TOKENS, type NodeType } from "../../types/common";
+import { type GraphNodeData, type EdgeSpec } from "../../types/graph";
 import { useSettingsStore } from "../../stores/settings.store";
 import GraphNode from "./GraphNode.vue";
 
 import "@vue-flow/core/dist/style.css";
 import "@vue-flow/core/dist/theme-default.css";
 import "@vue-flow/controls/dist/style.css";
-
-interface GraphNodeData {
-  type: NodeType;
-  label: string;
-  sub: string;
-  big?: boolean;
-  emphasis?: boolean;
-  formula?: string;
-  footer?: string;
-}
 
 const props = defineProps<{ selected: string }>();
 const emit = defineEmits<{ (e: "select", id: string): void }>();
@@ -189,15 +180,6 @@ function labelBg(from: string, to: string) {
     fill: "#ffffff",
     stroke: isSel ? settingsStore.settings.appearance.accentColor : "rgba(137, 160, 174, 0.4)",
   };
-}
-
-interface EdgeSpec {
-  id: string;
-  from: string;
-  to: string;
-  label?: string;
-  dir: "lr" | "td" | "bu";
-  dashed?: boolean;
 }
 
 const edgeSpecs: EdgeSpec[] = [

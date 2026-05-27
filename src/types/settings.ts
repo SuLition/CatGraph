@@ -13,6 +13,7 @@ export interface AppSettings {
     defaultProjectPath: string;
     restoreLastSession: boolean;
     autoSaveIntervalMinutes: number;
+    sideListWidth: number;
   };
   graph: {
     showGrid: boolean;

@@ -1,29 +1,11 @@
 <script setup lang="ts">
 import { Dismiss20Regular, ChevronRight20Regular } from "@vicons/fluent";
-import { TYPE_TOKENS, type NodeType } from "../../data/knowledge-graph";
+import { TYPE_TOKENS } from "../../types/common";
+import type { NodeType } from "../../types/common";
+import type { NodeDetail } from "../../types/graph";
 
-export interface NodeRef {
-  type: NodeType;
-  name: string;
-  via?: string;
-}
-
-export interface NodeDetailField {
-  label: string;
-  value: string;
-  mono?: boolean;
-}
-
-export interface NodeDetail {
-  type: NodeType;
-  code?: string;
-  name: string;
-  value?: string;
-  unit?: string;
-  fields?: NodeDetailField[];
-  upstream?: NodeRef[];
-  downstream?: NodeRef[];
-}
+// re-export for consumers
+export type { NodeRef, NodeDetailField, NodeDetail } from "../../types/graph";
 
 defineProps<{
   node: NodeDetail | null;

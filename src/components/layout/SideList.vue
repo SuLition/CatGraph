@@ -148,7 +148,7 @@ function handleSelect(id: string) {
 
 <style scoped>
 .side-list {
-  width: 240px;
+  width: var(--side-list-width, 240px);
   display: flex;
   flex-direction: column;
   min-height: 0;

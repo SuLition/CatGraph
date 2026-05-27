@@ -2,16 +2,19 @@
 import { computed } from "vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
-  ArrowLeftOutlined,
-  ArrowRightOutlined,
   BorderOutlined,
   CloseOutlined,
   MinusOutlined,
 } from "@vicons/antd";
-import { PanelLeft20Regular, PanelLeftExpand20Regular } from "@vicons/fluent";
+import {
+  ArrowSort20Regular,
+  PanelLeft20Regular,
+  PanelLeftExpand20Regular,
+} from "@vicons/fluent";
 
 const props = defineProps<{
   sideListCollapsed?: boolean;
+  minimal?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -48,8 +51,8 @@ function handleAppIconClick() {
 </script>
 
 <template>
-  <header class="titlebar">
-    <div class="titlebar-left">
+  <header class="titlebar" :class="{ 'is-minimal': minimal }">
+    <div v-if="!minimal" class="titlebar-left">
       <button
         class="icon-button app-icon"
         :class="{ 'is-active': sideListCollapsed }"
@@ -65,11 +68,9 @@ function handleAppIconClick() {
         />
       </button>
 
-      <button class="nav-button" aria-label="后退" type="button">
-        <ArrowLeftOutlined class="titlebar-icon nav-symbol" aria-hidden="true" />
-      </button>
-      <button class="nav-button is-disabled" aria-label="前进" type="button">
-        <ArrowRightOutlined class="titlebar-icon nav-symbol" aria-hidden="true" />
+      <button class="nav-button db-switcher" aria-label="切换数据库" type="button">
+        <ArrowSort20Regular class="titlebar-icon nav-symbol" aria-hidden="true" />
+        <span class="db-switcher-label">默认资料库</span>
       </button>
 
       <nav class="menu" aria-label="应用菜单">
@@ -116,6 +117,11 @@ function handleAppIconClick() {
   user-select: none;
 }
 
+.titlebar.is-minimal {
+  border-bottom: 0;
+  background: transparent;
+}
+
 .titlebar-left {
   display: flex;
   align-items: center;
@@ -145,6 +151,20 @@ function handleAppIconClick() {
   width: 34px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.nav-button.db-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: auto;
+  padding: 0 8px 0 6px;
+}
+
+.db-switcher-label {
+  font-size: 12px;
+  color: inherit;
+  white-space: nowrap;
 }
 
 .titlebar-icon {
@@ -183,7 +203,7 @@ function handleAppIconClick() {
 .menu-item {
   min-width: 54px;
   padding: 0 12px;
-  font-size: 14px;
+  font-size: 12px;
   letter-spacing: 0;
   white-space: nowrap;
   border-radius: 4px;

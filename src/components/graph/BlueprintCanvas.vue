@@ -3,8 +3,13 @@ import { computed, ref } from "vue";
 import BPHeader from "./BPHeader.vue";
 import BlueprintGraph from "./BlueprintGraph.vue";
 import StepRail from "./StepRail.vue";
-import NodePanel, { type NodeDetail } from "./NodePanel.vue";
-import { CONSTANTS, EQUIPMENT, EXPERIMENT, REFERENCES, RESULTS } from "../../data/knowledge-graph";
+import NodePanel from "./NodePanel.vue";
+import type { NodeDetail } from "../../types/graph";
+import { EXPERIMENT } from "../../data/experiments.data";
+import { CONSTANTS } from "../../data/constants.data";
+import { EQUIPMENT } from "../../data/equipment.data";
+import { RESULTS } from "../../data/results.data";
+import { REFERENCES } from "../../data/references.data";
 
 const selected = ref<string>("exp");
 const showPanel = ref(true);
