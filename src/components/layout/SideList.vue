@@ -12,6 +12,7 @@ import type { NavId } from "../../types/navigation";
 const props = defineProps<{
   navId: NavId;
   selectedId: string;
+  dynamicGroups?: import("../../data/nav-side-lists").SideListGroup[];
 }>();
 
 const emit = defineEmits<{
@@ -26,8 +27,9 @@ const config = computed(() => {
   return SIDE_LISTS.experiments;
 });
 
+const groups = computed(() => props.dynamicGroups ?? config.value.groups);
 const totalCount = computed(() =>
-  config.value.groups.reduce((sum, group) => sum + group.items.length, 0),
+  groups.value.reduce((sum, group) => sum + group.items.length, 0),
 );
 
 function toneClass(item: SideListItem) {
@@ -48,7 +50,10 @@ function handleSelect(id: string) {
     <header class="side-list-header">
       <div class="header-row">
         <h2 class="side-list-title">{{ config.title }}</h2>
-        <span class="side-list-count">{{ totalCount }} 项</span>
+        <div class="header-trailing">
+          <slot name="header-trailing" />
+          <span class="side-list-count">{{ totalCount }} 项</span>
+        </div>
       </div>
       <div class="search-box">
         <Search20Regular class="search-icon" aria-hidden="true" />
@@ -58,7 +63,7 @@ function handleSelect(id: string) {
     </header>
 
     <div class="groups">
-      <section v-for="group in config.groups" :key="group.title" class="group">
+      <section v-for="group in groups" :key="group.title" class="group">
         <div class="group-header">
           <ChevronDown20Regular class="group-chevron" aria-hidden="true" />
           <span class="group-title">{{ group.title }}</span>
@@ -166,6 +171,12 @@ function handleSelect(id: string) {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+}
+
+.header-trailing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .side-list-title {

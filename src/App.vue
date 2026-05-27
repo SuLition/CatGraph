@@ -7,15 +7,22 @@ import SideList from "./components/layout/SideList.vue";
 import ContentArea from "./components/layout/ContentArea.vue";
 import StatusBar from "./components/layout/StatusBar.vue";
 import LoadingScreen from "./components/layout/LoadingScreen.vue";
+import ToastStack from "./components/layout/ToastStack.vue";
+import DocumentImportButton from "./components/documents/DocumentImportButton.vue";
 import { DEFAULT_NAV_ID } from "./constants/navigation";
+import { documentsToSideListGroups } from "./data/nav-side-lists";
 import { SIDE_LIST_MAX_WIDTH, SIDE_LIST_MIN_WIDTH } from "./services/settings.service";
+import { useDocumentsStore } from "./stores/documents.store";
 import { useSettingsStore } from "./stores/settings.store";
+import { useSnippetsStore } from "./stores/snippets.store";
 import { useWorkspaceStore } from "./stores/workspace.store";
 import type { NavId } from "./types/navigation";
 
 const route = useRoute();
 const workspace = useWorkspaceStore();
 const settingsStore = useSettingsStore();
+const documents = useDocumentsStore();
+const snippets = useSnippetsStore();
 
 watchEffect(() => {
   workspace.setActiveNavId((route.meta.navId as NavId | undefined) ?? DEFAULT_NAV_ID);
@@ -30,6 +37,8 @@ const isHiding = ref(false);
 
 onMounted(() => {
   const start = performance.now();
+  void documents.load();
+  void snippets.load();
 
   const settle = () => {
     if (isHiding.value) return;
@@ -59,6 +68,11 @@ onMounted(() => {
 });
 
 const isResizing = ref(false);
+const selectedSideListId = computed(() => workspace.activeSideListId);
+
+const documentSideListGroups = computed(() =>
+  workspace.activeNavId === "documents" ? documentsToSideListGroups(documents.documents) : undefined,
+);
 
 const showResizer = computed(
   () =>
@@ -97,6 +111,14 @@ function onResizerPointerDown(event: PointerEvent) {
 function onResizerDoubleClick() {
   settingsStore.settings.workspace.sideListWidth = 240;
 }
+
+function handleSideListSelect(id: string) {
+  workspace.setSelectedSideListItem(id);
+}
+
+function handleDocumentImported(id: string) {
+  workspace.selectedSideListIds.documents = id;
+}
 </script>
 
 <template>
@@ -126,9 +148,14 @@ function onResizerDoubleClick() {
         <SideList
           v-if="workspace.shouldShowSideList"
           :nav-id="workspace.activeNavId"
-          :selected-id="workspace.activeSideListId"
-          @select="workspace.setSelectedSideListItem"
-        />
+          :selected-id="selectedSideListId"
+          :dynamic-groups="documentSideListGroups"
+          @select="handleSideListSelect"
+        >
+          <template v-if="workspace.activeNavId === 'documents'" #header-trailing>
+            <DocumentImportButton @imported="handleDocumentImported" />
+          </template>
+        </SideList>
       </div>
       <ContentArea />
       <div
@@ -151,6 +178,7 @@ function onResizerDoubleClick() {
     <div v-else class="statusbar-placeholder"></div>
 
     <LoadingScreen v-if="isLoading" :hiding="isHiding" />
+    <ToastStack />
   </div>
 </template>
 
@@ -160,6 +188,8 @@ function onResizerDoubleClick() {
   display: grid;
   grid-template-columns: 42px var(--side-list-width, 240px) 1fr;
   min-height: 0;
+  min-width: 0;
+  overflow: hidden;
   transition: grid-template-columns 220ms ease;
 }
 

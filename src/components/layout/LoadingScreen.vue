@@ -14,30 +14,7 @@ onMounted(() => {
 
 <template>
   <div class="loading-screen" :class="{ 'is-hiding': hiding }" aria-hidden="true">
-    <svg
-      class="loading-mark"
-      viewBox="0 0 64 64"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linejoin="round"
-    >
-      <path
-        d="M32 6
-           C 38 6, 42 10, 42 16
-           C 48 14, 54 18, 54 24
-           C 60 26, 60 34, 54 38
-           C 56 44, 50 50, 44 48
-           C 42 54, 34 56, 32 52
-           C 30 56, 22 54, 20 48
-           C 14 50, 8 44, 10 38
-           C 4 34, 4 26, 10 24
-           C 10 18, 16 14, 22 16
-           C 22 10, 26 6, 32 6 Z"
-      />
-      <path d="M26 28 L31 33 L26 38" stroke-linecap="round" />
-      <path d="M33 38 L40 38" stroke-linecap="round" />
-    </svg>
+    <img class="loading-mark" src="/catgraph-logo.svg" alt="" />
   </div>
 </template>
 
@@ -63,7 +40,6 @@ onMounted(() => {
 .loading-mark {
   width: 56px;
   height: 56px;
-  color: #bcbec2;
   animation: loading-breath 1800ms ease-in-out infinite;
 }
 

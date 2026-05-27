@@ -1,3 +1,4 @@
+import type { DocumentRecord } from "../types/document";
 import type { NavId } from "../types/navigation";
 
 export type SideListNavId = Exclude<NavId, "settings">;
@@ -353,7 +354,7 @@ export const SIDE_LISTS: Record<SideListNavId, SideListConfig> = {
 };
 
 export const DEFAULT_SIDE_LIST_SELECTIONS: Record<SideListNavId, string> = {
-  documents: "doc-test-plan",
+  documents: "",
   experiments: "exp-base-inertia",
   constants: "c-r",
   graph: "graph-experiment",
@@ -363,4 +364,28 @@ export const DEFAULT_SIDE_LIST_SELECTIONS: Record<SideListNavId, string> = {
 
 export function isSideListNavId(id: NavId): id is SideListNavId {
   return id !== "settings";
+}
+
+export function documentsToSideListGroups(documents: DocumentRecord[]): SideListGroup[] {
+  if (documents.length === 0) return [];
+
+  const sorted = [...documents].sort((a, b) => (a.importedAt < b.importedAt ? 1 : -1));
+  const recent = sorted.slice(0, 5);
+  const rest = sorted.slice(5);
+
+  const toItem = (document: DocumentRecord): SideListItem => ({
+    id: document.id,
+    label: document.title,
+    code: document.originalName,
+    meta: new Date(document.importedAt).toLocaleString(),
+    badge: document.kind.toUpperCase(),
+    tone:
+      document.kind === "pdf" ? "info" : document.kind === "markdown" ? "muted" : "success",
+  });
+
+  const groups: SideListGroup[] = [{ title: "最近导入", items: recent.map(toItem) }];
+  if (rest.length > 0) {
+    groups.push({ title: "全部", items: rest.map(toItem) });
+  }
+  return groups;
 }

@@ -1,3 +1,5 @@
+mod documents;
+
 use serde_json::{json, Value};
 use std::{fs, path::PathBuf};
 use tauri::{AppHandle, Manager};
@@ -79,10 +81,18 @@ fn write_settings(app: AppHandle, settings: Value) -> Result<Value, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             greet,
             read_settings,
-            write_settings
+            write_settings,
+            documents::import_document,
+            documents::list_documents,
+            documents::read_document_bytes,
+            documents::delete_document,
+            documents::list_snippets,
+            documents::save_snippet,
+            documents::delete_snippet
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

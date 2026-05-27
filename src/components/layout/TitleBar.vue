@@ -8,8 +8,6 @@ import {
 } from "@vicons/antd";
 import {
   ArrowSort20Regular,
-  PanelLeft20Regular,
-  PanelLeftExpand20Regular,
 } from "@vicons/fluent";
 
 const props = defineProps<{
@@ -61,11 +59,7 @@ function handleAppIconClick() {
         type="button"
         @click="handleAppIconClick"
       >
-        <component
-          :is="sideListCollapsed ? PanelLeftExpand20Regular : PanelLeft20Regular"
-          class="titlebar-icon app-symbol"
-          aria-hidden="true"
-        />
+        <img class="brand-logo" src="/catgraph-logo.svg" alt="" />
       </button>
 
       <button class="nav-button db-switcher" aria-label="切换数据库" type="button">
@@ -175,9 +169,11 @@ function handleAppIconClick() {
   flex: none;
 }
 
-.app-symbol {
-  width: 16px;
-  height: 16px;
+.brand-logo {
+  display: block;
+  width: 22px;
+  height: 22px;
+  flex: none;
 }
 
 .control-symbol {
