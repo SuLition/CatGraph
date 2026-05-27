@@ -4,13 +4,7 @@ import BPHeader from "./BPHeader.vue";
 import BlueprintGraph from "./BlueprintGraph.vue";
 import StepRail from "./StepRail.vue";
 import NodePanel, { type NodeDetail } from "./NodePanel.vue";
-import {
-  CONSTANTS,
-  EQUIPMENT,
-  EXPERIMENT,
-  REFERENCES,
-  RESULTS,
-} from "../../data/knowledge-graph";
+import { CONSTANTS, EQUIPMENT, EXPERIMENT, REFERENCES, RESULTS } from "../../data/knowledge-graph";
 
 const selected = ref<string>("exp");
 const showPanel = ref(true);

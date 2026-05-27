@@ -208,7 +208,13 @@ export const EXPERIMENT_GROUPS: ExperimentListGroup[] = [
   {
     title: "基础试验",
     items: [
-      { id: "exp-base-inertia", label: "基础惯量测定", code: "EXP-BI-001", status: "已完成", active: true },
+      {
+        id: "exp-base-inertia",
+        label: "基础惯量测定",
+        code: "EXP-BI-001",
+        status: "已完成",
+        active: true,
+      },
       { id: "exp-coastdown", label: "滑行系数测定", code: "EXP-CD-002", status: "进行中" },
       { id: "exp-torque-cal", label: "扭矩校准", code: "EXP-TC-003", status: "待开始" },
     ],

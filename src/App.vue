@@ -25,10 +25,7 @@ function toggleSideList() {
 
 <template>
   <div class="window-frame">
-    <TitleBar
-      :side-list-collapsed="isSideListCollapsed"
-      @toggle-side-list="toggleSideList"
-    />
+    <TitleBar :side-list-collapsed="isSideListCollapsed" @toggle-side-list="toggleSideList" />
 
     <main class="workspace" :class="{ 'is-side-list-collapsed': isSideListCollapsed }">
       <ActivityBar :active-id="activeId" @select="handleNavSelect" />
@@ -53,7 +50,7 @@ function toggleSideList() {
 .workspace.is-side-list-collapsed {
   --side-list-width: 0px;
   --content-radius: 0px;
-  --border-width: 0px
+  --border-width: 0px;
 }
 
 .side-list-slot {

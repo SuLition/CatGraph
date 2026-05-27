@@ -20,9 +20,7 @@ const emit = defineEmits<{
 
 const menuItems = ["文件", "编辑", "查看", "窗口", "帮助"];
 
-const appIconLabel = computed(() =>
-  props.sideListCollapsed ? "展开侧边列表" : "折叠侧边列表",
-);
+const appIconLabel = computed(() => (props.sideListCollapsed ? "展开侧边列表" : "折叠侧边列表"));
 
 function currentWindow() {
   if (!("__TAURI_INTERNALS__" in window)) {
@@ -75,12 +73,7 @@ function handleAppIconClick() {
       </button>
 
       <nav class="menu" aria-label="应用菜单">
-        <button
-          v-for="item in menuItems"
-          :key="item"
-          class="menu-item"
-          type="button"
-        >
+        <button v-for="item in menuItems" :key="item" class="menu-item" type="button">
           {{ item }}
         </button>
       </nav>
@@ -89,12 +82,7 @@ function handleAppIconClick() {
     <div class="titlebar-drag-region" data-tauri-drag-region></div>
 
     <div class="titlebar-controls">
-      <button
-        class="window-control"
-        aria-label="最小化"
-        type="button"
-        @click="minimizeWindow"
-      >
+      <button class="window-control" aria-label="最小化" type="button" @click="minimizeWindow">
         <MinusOutlined class="titlebar-icon control-symbol" aria-hidden="true" />
       </button>
       <button

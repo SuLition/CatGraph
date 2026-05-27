@@ -51,9 +51,7 @@ function tokenOf(type: NodeType) {
         {{ tokenOf(node.type).initial }}
       </div>
       <div class="panel-title">
-        <div class="panel-kicker">
-          {{ tokenOf(node.type).label }} · {{ node.code }}
-        </div>
+        <div class="panel-kicker">{{ tokenOf(node.type).label }} · {{ node.code }}</div>
         <h3 class="panel-name">{{ node.name }}</h3>
       </div>
       <button class="close-btn" type="button" aria-label="关闭" @click="emit('close')">

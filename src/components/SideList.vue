@@ -59,8 +59,7 @@ const totalCount = EXPERIMENT_GROUPS.reduce((sum, g) => sum + g.items.length, 0)
               <span
                 class="item-dot"
                 :style="{
-                  background:
-                    selectedId === item.id ? '#1a6b8a' : statusColor(item.status),
+                  background: selectedId === item.id ? '#1a6b8a' : statusColor(item.status),
                 }"
               ></span>
               <span class="item-label">{{ item.label }}</span>

@@ -19,11 +19,7 @@ defineProps<{
     </div>
 
     <div class="cells">
-      <article
-        v-for="(step, i) in experiment.steps"
-        :key="step.id"
-        class="cell"
-      >
+      <article v-for="(step, i) in experiment.steps" :key="step.id" class="cell">
         <header class="cell-head">
           <span class="cell-in">In [{{ i + 1 }}]:</span>
           <span class="cell-name">{{ step.name }}</span>

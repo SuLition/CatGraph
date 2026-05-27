@@ -39,16 +39,88 @@ const H = 500;
 
 const nodes: GraphNode[] = [
   // 标准 (top row)
-  { id: "ref-sae", type: "reference", x: 220, y: 36, w: 150, h: 36, label: "SAE J2264", sub: "§4.2 校准" },
-  { id: "ref-gb", type: "reference", x: 400, y: 36, w: 150, h: 36, label: "GB/T 18352.6", sub: "附录 C" },
-  { id: "ref-iso", type: "reference", x: 580, y: 36, w: 150, h: 36, label: "ISO 10521", sub: "Part 1" },
+  {
+    id: "ref-sae",
+    type: "reference",
+    x: 220,
+    y: 36,
+    w: 150,
+    h: 36,
+    label: "SAE J2264",
+    sub: "§4.2 校准",
+  },
+  {
+    id: "ref-gb",
+    type: "reference",
+    x: 400,
+    y: 36,
+    w: 150,
+    h: 36,
+    label: "GB/T 18352.6",
+    sub: "附录 C",
+  },
+  {
+    id: "ref-iso",
+    type: "reference",
+    x: 580,
+    y: 36,
+    w: 150,
+    h: 36,
+    label: "ISO 10521",
+    sub: "Part 1",
+  },
   // 常量 (left column)
-  { id: "c-r", type: "constant", x: 30, y: 110, w: 170, h: 56, label: "r · 滚筒半径", sub: "0.2032 m" },
-  { id: "c-fs", type: "constant", x: 30, y: 180, w: 170, h: 56, label: "fs · 采样频率", sub: "200 Hz" },
-  { id: "c-N", type: "constant", x: 30, y: 250, w: 170, h: 56, label: "N · 编码器脉冲", sub: "1024 脉冲/转" },
-  { id: "c-vhi", type: "constant", x: 30, y: 320, w: 170, h: 56, label: "v_hi / v_lo · 速度门限", sub: "55 / 15 mph" },
+  {
+    id: "c-r",
+    type: "constant",
+    x: 30,
+    y: 110,
+    w: 170,
+    h: 56,
+    label: "r · 滚筒半径",
+    sub: "0.2032 m",
+  },
+  {
+    id: "c-fs",
+    type: "constant",
+    x: 30,
+    y: 180,
+    w: 170,
+    h: 56,
+    label: "fs · 采样频率",
+    sub: "200 Hz",
+  },
+  {
+    id: "c-N",
+    type: "constant",
+    x: 30,
+    y: 250,
+    w: 170,
+    h: 56,
+    label: "N · 编码器脉冲",
+    sub: "1024 脉冲/转",
+  },
+  {
+    id: "c-vhi",
+    type: "constant",
+    x: 30,
+    y: 320,
+    w: 170,
+    h: 56,
+    label: "v_hi / v_lo · 速度门限",
+    sub: "55 / 15 mph",
+  },
   // 设备 (left bottom)
-  { id: "eq-drum", type: "equipment", x: 30, y: 410, w: 170, h: 56, label: "滚筒", sub: 'Horiba DC-48"' },
+  {
+    id: "eq-drum",
+    type: "equipment",
+    x: 30,
+    y: 410,
+    w: 170,
+    h: 56,
+    label: "滚筒",
+    sub: 'Horiba DC-48"',
+  },
   // 试验主体 (center)
   {
     id: "exp",
@@ -62,8 +134,26 @@ const nodes: GraphNode[] = [
     big: true,
   },
   // 设备 (center bottom)
-  { id: "eq-torque", type: "equipment", x: 320, y: 360, w: 170, h: 56, label: "扭矩传感器", sub: "HBM T40B · 2000 N·m" },
-  { id: "eq-encoder", type: "equipment", x: 510, y: 360, w: 170, h: 56, label: "编码器", sub: "Heidenhain ERN1387" },
+  {
+    id: "eq-torque",
+    type: "equipment",
+    x: 320,
+    y: 360,
+    w: 170,
+    h: 56,
+    label: "扭矩传感器",
+    sub: "HBM T40B · 2000 N·m",
+  },
+  {
+    id: "eq-encoder",
+    type: "equipment",
+    x: 510,
+    y: 360,
+    w: 170,
+    h: 56,
+    label: "编码器",
+    sub: "Heidenhain ERN1387",
+  },
   // 结果 (right column)
   {
     id: "r-Ibase",
@@ -76,10 +166,37 @@ const nodes: GraphNode[] = [
     sub: "78.4 kg·m² ±0.6%",
     emphasis: true,
   },
-  { id: "r-Idrum", type: "result", x: 800, y: 230, w: 170, h: 56, label: "I_drum · 滚筒旋转质量", sub: "142.6 kg" },
+  {
+    id: "r-Idrum",
+    type: "result",
+    x: 800,
+    y: 230,
+    w: 170,
+    h: 56,
+    label: "I_drum · 滚筒旋转质量",
+    sub: "142.6 kg",
+  },
   // 下游试验 (far right)
-  { id: "exp-nedc", type: "experiment", x: 800, y: 330, w: 170, h: 56, label: "NEDC 工况", sub: "使用 I_sim" },
-  { id: "exp-wltc", type: "experiment", x: 800, y: 410, w: 170, h: 56, label: "WLTC 工况", sub: "使用 I_sim" },
+  {
+    id: "exp-nedc",
+    type: "experiment",
+    x: 800,
+    y: 330,
+    w: 170,
+    h: 56,
+    label: "NEDC 工况",
+    sub: "使用 I_sim",
+  },
+  {
+    id: "exp-wltc",
+    type: "experiment",
+    x: 800,
+    y: 410,
+    w: 170,
+    h: 56,
+    label: "WLTC 工况",
+    sub: "使用 I_sim",
+  },
 ];
 
 const nodeIndex = Object.fromEntries(nodes.map((n) => [n.id, n]));
@@ -216,11 +333,7 @@ const legend: { type: NodeType; label: string }[] = [
       <span class="lane lane-output">│ 产出与下游</span>
     </div>
 
-    <svg
-      :viewBox="`0 0 ${W} ${H}`"
-      preserveAspectRatio="xMidYMid meet"
-      class="graph-svg"
-    >
+    <svg :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="xMidYMid meet" class="graph-svg">
       <defs>
         <marker
           id="arr-bp"
@@ -308,14 +421,7 @@ const legend: { type: NodeType; label: string }[] = [
           :stroke="nodeStroke(n.type, selected === n.id)"
           :stroke-width="selected === n.id ? 1.5 : 1"
         />
-        <rect
-          :x="n.x"
-          :y="n.y"
-          width="5"
-          :height="n.h"
-          rx="6"
-          :fill="nodeStripFill(n.type)"
-        />
+        <rect :x="n.x" :y="n.y" width="5" :height="n.h" rx="6" :fill="nodeStripFill(n.type)" />
         <text
           :x="n.x + n.w - 8"
           :y="n.y + 13"
@@ -352,13 +458,7 @@ const legend: { type: NodeType; label: string }[] = [
           fill="oklch(60% 0.18 145)"
         />
         <template v-if="n.big">
-          <text
-            :x="n.x + 14"
-            :y="n.y + 80"
-            font-size="10"
-            fill="#8a939c"
-            letter-spacing="0.6"
-          >
+          <text :x="n.x + 14" :y="n.y + 80" font-size="10" fill="#8a939c" letter-spacing="0.6">
             主公式
           </text>
           <text
@@ -417,7 +517,10 @@ const legend: { type: NodeType; label: string }[] = [
     radial-gradient(circle at 30% 20%, oklch(98% 0.01 240) 0, transparent 70%),
     linear-gradient(rgb(15 23 42 / 5%) 1px, transparent 1px),
     linear-gradient(90deg, rgb(15 23 42 / 5%) 1px, transparent 1px);
-  background-size: auto, 24px 24px, 24px 24px;
+  background-size:
+    auto,
+    24px 24px,
+    24px 24px;
   background-color: #fafbfc;
 }
 
