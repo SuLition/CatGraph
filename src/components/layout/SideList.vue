@@ -28,9 +28,7 @@ const config = computed(() => {
 });
 
 const groups = computed(() => props.dynamicGroups ?? config.value.groups);
-const totalCount = computed(() =>
-  groups.value.reduce((sum, group) => sum + group.items.length, 0),
-);
+const totalCount = computed(() => groups.value.reduce((sum, group) => sum + group.items.length, 0));
 
 function toneClass(item: SideListItem) {
   return `tone-${item.tone ?? "muted"}`;
@@ -62,9 +60,12 @@ function handleSelect(id: string) {
       </div>
     </header>
 
-    <div class="groups">
+    <div
+      class="groups"
+      :class="{ 'is-flat-document-list': config.variant === 'document' && dynamicGroups }"
+    >
       <section v-for="group in groups" :key="group.title" class="group">
-        <div class="group-header">
+        <div v-if="!(config.variant === 'document' && dynamicGroups)" class="group-header">
           <ChevronDown20Regular class="group-chevron" aria-hidden="true" />
           <span class="group-title">{{ group.title }}</span>
           <span class="group-count">{{ group.items.length }}</span>
@@ -238,6 +239,14 @@ function handleSelect(id: string) {
   margin-bottom: 6px;
 }
 
+.groups.is-flat-document-list {
+  padding-top: 8px;
+}
+
+.groups.is-flat-document-list .group {
+  margin-bottom: 2px;
+}
+
 .group-header {
   display: flex;
   align-items: center;
@@ -336,6 +345,32 @@ function handleSelect(id: string) {
   gap: 6px;
   font-size: 11px;
   color: var(--subtle-text-color);
+}
+
+.variant-document .list-item {
+  padding: 8px 10px;
+}
+
+.variant-document .document-row .item-label {
+  flex: 1 1 auto;
+}
+
+.variant-document .item-meta {
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.variant-document .item-code {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.variant-document .item-meta span:last-child {
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 
 .variant-experiment .item-meta {

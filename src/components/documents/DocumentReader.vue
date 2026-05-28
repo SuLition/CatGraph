@@ -22,13 +22,6 @@ defineExpose({ jumpTo });
 
 <template>
   <div class="reader">
-    <header v-if="record" class="reader-header">
-      <h1 class="reader-title">{{ record.title }}</h1>
-      <div class="reader-meta">
-        <span class="kind-chip">{{ record.kind.toUpperCase() }}</span>
-        <span class="meta-text">{{ record.originalName }}</span>
-      </div>
-    </header>
     <main class="reader-body">
       <SelectionHost
         v-if="record && viewer"
@@ -51,46 +44,6 @@ defineExpose({ jumpTo });
   min-width: 0;
   flex: 1 1 auto;
   overflow: hidden;
-}
-
-.reader-header {
-  flex: 0 0 auto;
-  padding: 14px 24px;
-  border-bottom: 1px solid var(--border-color);
-  background: rgb(255 255 255 / 35%);
-}
-
-.reader-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.reader-meta {
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  color: var(--subtle-text-color);
-}
-
-.kind-chip {
-  display: inline-flex;
-  align-items: center;
-  height: 16px;
-  padding: 0 6px;
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--accent-color) 14%, transparent);
-  color: var(--accent-color);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-
-.meta-text {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
 }
 
 .reader-body {

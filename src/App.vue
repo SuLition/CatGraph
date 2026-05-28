@@ -71,7 +71,9 @@ const isResizing = ref(false);
 const selectedSideListId = computed(() => workspace.activeSideListId);
 
 const documentSideListGroups = computed(() =>
-  workspace.activeNavId === "documents" ? documentsToSideListGroups(documents.documents) : undefined,
+  workspace.activeNavId === "documents"
+    ? documentsToSideListGroups(documents.documents, snippets.snippets)
+    : undefined,
 );
 
 const showResizer = computed(
