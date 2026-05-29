@@ -7,9 +7,12 @@ function ensureTauri() {
   }
 }
 
-export async function importDocument(srcPath: string): Promise<DocumentRecord> {
+export async function importDocument(
+  srcPath: string,
+  folderId: string | null = null,
+): Promise<DocumentRecord> {
   ensureTauri();
-  return invoke<DocumentRecord>("import_document", { srcPath });
+  return invoke<DocumentRecord>("import_document", { srcPath, folderId });
 }
 
 export async function listDocuments(): Promise<DocumentRecord[]> {
@@ -26,4 +29,17 @@ export async function readDocumentBytes(id: string): Promise<Uint8Array> {
 export async function deleteDocument(id: string): Promise<void> {
   ensureTauri();
   await invoke<void>("delete_document", { id });
+}
+
+export async function setDocumentFolder(
+  id: string,
+  folderId: string | null,
+): Promise<DocumentRecord> {
+  ensureTauri();
+  return invoke<DocumentRecord>("set_document_folder", { id, folderId });
+}
+
+export async function renameDocument(id: string, title: string): Promise<DocumentRecord> {
+  ensureTauri();
+  return invoke<DocumentRecord>("rename_document", { id, title });
 }

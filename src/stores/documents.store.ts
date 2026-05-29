@@ -5,6 +5,8 @@ import {
   importDocument,
   listDocuments,
   readDocumentBytes,
+  renameDocument,
+  setDocumentFolder,
 } from "../services/documents.service";
 import type { DocumentRecord } from "../types/document";
 
@@ -25,8 +27,11 @@ export const useDocumentsStore = defineStore("documents", () => {
     }
   }
 
-  async function importFromPath(srcPath: string): Promise<DocumentRecord> {
-    const record = await importDocument(srcPath);
+  async function importFromPath(
+    srcPath: string,
+    folderId: string | null = null,
+  ): Promise<DocumentRecord> {
+    const record = await importDocument(srcPath, folderId);
     const existing = documents.value.findIndex((d) => d.id === record.id);
     if (existing >= 0) {
       documents.value[existing] = record;
@@ -41,6 +46,27 @@ export const useDocumentsStore = defineStore("documents", () => {
     documents.value = documents.value.filter((d) => d.id !== id);
   }
 
+  async function setFolder(id: string, folderId: string | null): Promise<DocumentRecord> {
+    const record = await setDocumentFolder(id, folderId);
+    const idx = documents.value.findIndex((d) => d.id === id);
+    if (idx >= 0) documents.value[idx] = record;
+    return record;
+  }
+
+  async function rename(id: string, title: string): Promise<DocumentRecord> {
+    const record = await renameDocument(id, title);
+    const idx = documents.value.findIndex((d) => d.id === id);
+    if (idx >= 0) documents.value[idx] = record;
+    return record;
+  }
+
+  /** Removes records from local state without a backend call (used after cascade folder delete). */
+  function dropLocal(ids: string[]) {
+    if (ids.length === 0) return;
+    const removed = new Set(ids);
+    documents.value = documents.value.filter((d) => !removed.has(d.id));
+  }
+
   async function readBytes(id: string): Promise<Uint8Array> {
     return readDocumentBytes(id);
   }
@@ -53,5 +79,18 @@ export const useDocumentsStore = defineStore("documents", () => {
     [...documents.value].sort((a, b) => (a.importedAt < b.importedAt ? 1 : -1)),
   );
 
-  return { documents, isLoading, error, recent, load, importFromPath, remove, readBytes, byId };
+  return {
+    documents,
+    isLoading,
+    error,
+    recent,
+    load,
+    importFromPath,
+    remove,
+    setFolder,
+    rename,
+    dropLocal,
+    readBytes,
+    byId,
+  };
 });

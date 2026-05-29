@@ -115,9 +115,16 @@ pub fn run() {
             documents::list_documents,
             documents::read_document_bytes,
             documents::delete_document,
+            documents::rename_document,
+            documents::set_document_folder,
             documents::list_snippets,
             documents::save_snippet,
             documents::delete_snippet,
+            documents::list_folders,
+            documents::create_folder,
+            documents::rename_folder,
+            documents::set_folder_pinned,
+            documents::delete_folder,
             ai::test_ai_provider,
             ai::chat_completion
         ])

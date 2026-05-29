@@ -8,11 +8,11 @@ import ContentArea from "./components/layout/ContentArea.vue";
 import StatusBar from "./components/layout/StatusBar.vue";
 import LoadingScreen from "./components/layout/LoadingScreen.vue";
 import ToastStack from "./components/layout/ToastStack.vue";
-import DocumentImportButton from "./components/documents/DocumentImportButton.vue";
+import DocumentSideList from "./components/documents/folders/DocumentSideList.vue";
 import { DEFAULT_NAV_ID } from "./constants/navigation";
-import { documentsToSideListGroups } from "./data/nav-side-lists";
 import { SIDE_LIST_MAX_WIDTH, SIDE_LIST_MIN_WIDTH } from "./services/settings.service";
 import { useDocumentsStore } from "./stores/documents.store";
+import { useFoldersStore } from "./stores/folders.store";
 import { useSettingsStore } from "./stores/settings.store";
 import { useSnippetsStore } from "./stores/snippets.store";
 import { useWorkspaceStore } from "./stores/workspace.store";
@@ -22,6 +22,7 @@ const route = useRoute();
 const workspace = useWorkspaceStore();
 const settingsStore = useSettingsStore();
 const documents = useDocumentsStore();
+const folders = useFoldersStore();
 const snippets = useSnippetsStore();
 
 watchEffect(() => {
@@ -38,6 +39,7 @@ const isHiding = ref(false);
 onMounted(() => {
   const start = performance.now();
   void documents.load();
+  void folders.load();
   void snippets.load();
 
   const settle = () => {
@@ -69,12 +71,6 @@ onMounted(() => {
 
 const isResizing = ref(false);
 const selectedSideListId = computed(() => workspace.activeSideListId);
-
-const documentSideListGroups = computed(() =>
-  workspace.activeNavId === "documents"
-    ? documentsToSideListGroups(documents.documents, snippets.snippets)
-    : undefined,
-);
 
 const showResizer = computed(
   () =>
@@ -117,10 +113,6 @@ function onResizerDoubleClick() {
 function handleSideListSelect(id: string) {
   workspace.setSelectedSideListItem(id);
 }
-
-function handleDocumentImported(id: string) {
-  workspace.selectedSideListIds.documents = id;
-}
 </script>
 
 <template>
@@ -147,17 +139,15 @@ function handleDocumentImported(id: string) {
     >
       <ActivityBar />
       <div class="side-list-slot">
+        <DocumentSideList
+          v-if="workspace.shouldShowSideList && workspace.activeNavId === 'documents'"
+        />
         <SideList
-          v-if="workspace.shouldShowSideList"
+          v-else-if="workspace.shouldShowSideList"
           :nav-id="workspace.activeNavId"
           :selected-id="selectedSideListId"
-          :dynamic-groups="documentSideListGroups"
           @select="handleSideListSelect"
-        >
-          <template v-if="workspace.activeNavId === 'documents'" #header-trailing>
-            <DocumentImportButton @imported="handleDocumentImported" />
-          </template>
-        </SideList>
+        />
       </div>
       <ContentArea />
       <div

@@ -11,4 +11,5 @@ export interface DocumentRecord {
   importedAt: string;
   lastOpenedAt?: string;
   tags?: string[];
+  folderId?: string | null;
 }

@@ -7,6 +7,8 @@ vi.mock("../services/documents.service", () => ({
   importDocument: vi.fn(),
   deleteDocument: vi.fn(),
   readDocumentBytes: vi.fn(),
+  setDocumentFolder: vi.fn(),
+  renameDocument: vi.fn(),
 }));
 
 import * as svc from "../services/documents.service";
@@ -27,6 +29,8 @@ beforeEach(() => {
   vi.mocked(svc.listDocuments).mockReset();
   vi.mocked(svc.importDocument).mockReset();
   vi.mocked(svc.deleteDocument).mockReset();
+  vi.mocked(svc.setDocumentFolder).mockReset();
+  vi.mocked(svc.renameDocument).mockReset();
 });
 
 describe("documents.store", () => {
@@ -64,5 +68,32 @@ describe("documents.store", () => {
     await store.load();
     await store.remove("a");
     expect(store.documents.map((d) => d.id)).toEqual(["b"]);
+  });
+
+  it("setFolder updates the record's folderId", async () => {
+    vi.mocked(svc.listDocuments).mockResolvedValueOnce([sample("a")]);
+    vi.mocked(svc.setDocumentFolder).mockResolvedValueOnce({ ...sample("a"), folderId: "f1" });
+    const store = useDocumentsStore();
+    await store.load();
+    await store.setFolder("a", "f1");
+    expect(store.byId("a")?.folderId).toBe("f1");
+  });
+
+  it("rename updates the title", async () => {
+    vi.mocked(svc.listDocuments).mockResolvedValueOnce([sample("a")]);
+    vi.mocked(svc.renameDocument).mockResolvedValueOnce({ ...sample("a"), title: "renamed" });
+    const store = useDocumentsStore();
+    await store.load();
+    await store.rename("a", "renamed");
+    expect(store.byId("a")?.title).toBe("renamed");
+  });
+
+  it("dropLocal removes records without a backend call", async () => {
+    vi.mocked(svc.listDocuments).mockResolvedValueOnce([sample("a"), sample("b"), sample("c")]);
+    const store = useDocumentsStore();
+    await store.load();
+    store.dropLocal(["a", "c"]);
+    expect(store.documents.map((d) => d.id)).toEqual(["b"]);
+    expect(svc.deleteDocument).not.toHaveBeenCalled();
   });
 });

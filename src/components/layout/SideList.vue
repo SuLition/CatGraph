@@ -12,7 +12,6 @@ import type { NavId } from "../../types/navigation";
 const props = defineProps<{
   navId: NavId;
   selectedId: string;
-  dynamicGroups?: import("../../data/nav-side-lists").SideListGroup[];
 }>();
 
 const emit = defineEmits<{
@@ -27,7 +26,7 @@ const config = computed(() => {
   return SIDE_LISTS.experiments;
 });
 
-const groups = computed(() => props.dynamicGroups ?? config.value.groups);
+const groups = computed(() => config.value.groups);
 const totalCount = computed(() => groups.value.reduce((sum, group) => sum + group.items.length, 0));
 
 function toneClass(item: SideListItem) {
@@ -60,12 +59,9 @@ function handleSelect(id: string) {
       </div>
     </header>
 
-    <div
-      class="groups"
-      :class="{ 'is-flat-document-list': config.variant === 'document' && dynamicGroups }"
-    >
+    <div class="groups">
       <section v-for="group in groups" :key="group.title" class="group">
-        <div v-if="!(config.variant === 'document' && dynamicGroups)" class="group-header">
+        <div class="group-header">
           <ChevronDown20Regular class="group-chevron" aria-hidden="true" />
           <span class="group-title">{{ group.title }}</span>
           <span class="group-count">{{ group.items.length }}</span>
@@ -100,17 +96,6 @@ function handleSelect(id: string) {
               <div class="value-row">
                 <span class="value-text">{{ item.value }}</span>
                 <span class="unit-text">{{ item.unit }}</span>
-              </div>
-            </template>
-
-            <template v-else-if="config.variant === 'document'">
-              <div class="document-row">
-                <span class="type-badge">{{ item.badge }}</span>
-                <span class="item-label">{{ item.label }}</span>
-              </div>
-              <div class="item-meta">
-                <span class="item-code">{{ item.code }}</span>
-                <span>· {{ item.meta }}</span>
               </div>
             </template>
 
@@ -238,14 +223,6 @@ function handleSelect(id: string) {
 
 .group {
   margin-bottom: 6px;
-}
-
-.groups.is-flat-document-list {
-  padding-top: 8px;
-}
-
-.groups.is-flat-document-list .group {
-  margin-bottom: 2px;
 }
 
 .group-header {

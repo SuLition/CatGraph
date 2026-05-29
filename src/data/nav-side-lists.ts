@@ -1,6 +1,4 @@
-import type { DocumentRecord } from "../types/document";
 import type { NavId } from "../types/navigation";
-import type { SnippetRecord } from "../types/snippet";
 
 export type SideListNavId = Exclude<NavId, "settings">;
 export type SideListVariant =
@@ -365,40 +363,4 @@ export const DEFAULT_SIDE_LIST_SELECTIONS: Record<SideListNavId, string> = {
 
 export function isSideListNavId(id: NavId): id is SideListNavId {
   return id !== "settings";
-}
-
-export function documentsToSideListGroups(
-  documents: DocumentRecord[],
-  snippets: SnippetRecord[] = [],
-): SideListGroup[] {
-  if (documents.length === 0) return [];
-
-  const sorted = [...documents].sort((a, b) => (a.importedAt < b.importedAt ? 1 : -1));
-  const recent = sorted.slice(0, 5);
-  const rest = sorted.slice(5);
-  const snippetCounts = snippets.reduce((counts, snippet) => {
-    const documentId = snippet.anchor.documentId;
-    counts.set(documentId, (counts.get(documentId) ?? 0) + 1);
-    return counts;
-  }, new Map<string, number>());
-
-  const toItem = (document: DocumentRecord): SideListItem => {
-    const snippetCount = snippetCounts.get(document.id) ?? 0;
-
-    return {
-      id: document.id,
-      label: document.title,
-      code: `知识库 ${snippetCount} 条`,
-      meta: new Date(document.importedAt).toLocaleString(),
-      badge: document.kind.toUpperCase(),
-      tone:
-        document.kind === "pdf" ? "info" : document.kind === "markdown" ? "muted" : "success",
-    };
-  };
-
-  const groups: SideListGroup[] = [{ title: "最近导入", items: recent.map(toItem) }];
-  if (rest.length > 0) {
-    groups.push({ title: "全部", items: rest.map(toItem) });
-  }
-  return groups;
 }
