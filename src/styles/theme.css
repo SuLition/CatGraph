@@ -1,0 +1,104 @@
+:root {
+  --accent-color: #d97757;
+  --accent-color-hover: color-mix(in srgb, var(--accent-color) 84%, black);
+  --accent-color-active: color-mix(in srgb, var(--accent-color) 72%, black);
+  --accent-color-soft: color-mix(in srgb, var(--accent-color) 10%, transparent);
+  --accent-color-softer: color-mix(in srgb, var(--accent-color) 5%, transparent);
+  --accent-border-color: color-mix(in srgb, var(--accent-color) 28%, transparent);
+
+  --app-text-color: #1f2933;
+  --text-color: var(--app-text-color);
+  --muted-text-color: #5a6670;
+  --subtle-text-color: #8a939c;
+  --inverse-text-color: #ffffff;
+
+  --app-background-color: transparent;
+  --content-background-color: #f9f9f7;
+  --titlebar-background-color: transparent;
+  --activitybar-background-color: transparent;
+  --sidelist-background-color: transparent;
+  --statusbar-background-color: transparent;
+  --panel-background-color: rgb(255 255 255 / 35%);
+  --surface-color: rgb(255 255 255 / 62%);
+  --surface-soft-color: rgb(255 255 255 / 22%);
+  --surface-muted-color: rgb(249 249 247 / 80%);
+  --surface-control-color: rgb(255 255 255 / 50%);
+  --surface-control-strong-color: #ffffff;
+  --surface-popover-color: rgb(255 255 255 / 96%);
+  --surface-overlay-color: rgb(30 30 30 / 95%);
+
+  --border-color: rgb(137 160 174 / 18%);
+  --border-subtle-color: rgb(137 160 174 / 10%);
+  --border-control-color: rgb(137 160 174 / 22%);
+  --border-strong-color: rgb(137 160 174 / 28%);
+  --hover-color: #dcebf0;
+  --active-item-background-color: rgb(137 160 174 / 12%);
+
+  --shadow-soft-color: rgb(15 23 42 / 6%);
+  --shadow-popover-color: rgb(0 0 0 / 10%);
+  --switch-track-color: #d8e1e6;
+
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #d44747;
+  --danger-color-hover: #d83b36;
+
+  --titlebar-text-color: #5a6670;
+  --titlebar-control-color: #18212a;
+  --nav-button-color: #5f6f78;
+  --nav-button-disabled-color: #b3c0c7;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --accent-color-hover: color-mix(in srgb, var(--accent-color) 82%, white);
+  --accent-color-active: color-mix(in srgb, var(--accent-color) 70%, white);
+  --accent-color-soft: color-mix(in srgb, var(--accent-color) 22%, transparent);
+  --accent-color-softer: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  --accent-border-color: color-mix(in srgb, var(--accent-color) 46%, transparent);
+
+  --app-text-color: #f5f4ef;
+  --text-color: var(--app-text-color);
+  --muted-text-color: #b7b5a9;
+  --subtle-text-color: #86847b;
+  --inverse-text-color: #1f1e1d;
+
+  /* Claude Code desktop:暖中性灰分层,各模块以明度区分 */
+  --app-background-color: rgb(34 34 32 / 92%);
+  --titlebar-background-color: transparent;
+  --activitybar-background-color: #1c1b19;
+  --sidelist-background-color: #262624;
+  --content-background-color: #30302e;
+  --statusbar-background-color: #1c1b19;
+
+  --panel-background-color: rgb(38 38 36 / 72%);
+  --surface-color: rgb(48 48 46 / 85%);
+  --surface-soft-color: rgb(48 48 46 / 45%);
+  --surface-muted-color: rgb(34 34 32 / 85%);
+  --surface-control-color: rgb(58 58 55 / 80%);
+  --surface-control-strong-color: #3a3a37;
+  --surface-popover-color: rgb(48 48 46 / 97%);
+  --surface-overlay-color: rgb(28 27 25 / 97%);
+
+  --border-color: rgb(245 244 239 / 10%);
+  --border-subtle-color: rgb(245 244 239 / 6%);
+  --border-control-color: rgb(245 244 239 / 14%);
+  --border-strong-color: rgb(245 244 239 / 22%);
+  --hover-color: rgb(245 244 239 / 7%);
+  --active-item-background-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
+
+  --shadow-soft-color: rgb(0 0 0 / 32%);
+  --shadow-popover-color: rgb(0 0 0 / 48%);
+  --switch-track-color: #3a3a37;
+
+  --success-color: #56b87f;
+  --warning-color: #e3a64b;
+  --danger-color: #d9534f;
+  --danger-color-hover: color-mix(in srgb, var(--danger-color) 84%, white);
+
+  --titlebar-text-color: #b7b5a9;
+  --titlebar-control-color: #f5f4ef;
+  --nav-button-color: #b7b5a9;
+  --nav-button-disabled-color: #6b6960;
+  color-scheme: dark;
+}

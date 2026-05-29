@@ -5,12 +5,18 @@ import type { DensityMode, ThemeMode } from "../../types/settings";
 const settingsStore = useSettingsStore();
 const settings = settingsStore.settings;
 
+const accentPresets = ["#d97757", "#1a6b8a", "#2563eb", "#7c3aed", "#0f766e", "#be123c"];
+
 function setTheme(theme: ThemeMode) {
   settings.appearance.theme = theme;
 }
 
 function setDensity(density: DensityMode) {
   settings.appearance.density = density;
+}
+
+function setAccentColor(color: string) {
+  settings.appearance.accentColor = color;
 }
 </script>
 
@@ -75,6 +81,18 @@ function setDensity(density: DensityMode) {
         <span class="setting-desc">用于图谱节点、按钮和选中态。</span>
       </div>
       <div class="color-field">
+        <div class="accent-presets" aria-label="预设强调色">
+          <button
+            v-for="color in accentPresets"
+            :key="color"
+            type="button"
+            class="accent-swatch"
+            :class="{ 'is-active': settings.appearance.accentColor.toLowerCase() === color }"
+            :style="{ background: color }"
+            :aria-label="`使用强调色 ${color}`"
+            @click="setAccentColor(color)"
+          ></button>
+        </div>
         <input v-model="settings.appearance.accentColor" type="color" aria-label="强调色" />
         <code>{{ settings.appearance.accentColor }}</code>
       </div>

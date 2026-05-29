@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from "vue";
 import MarkdownIt from "markdown-it";
 import { useDocumentsStore } from "../../../stores/documents.store";
 import type { SnippetLocator } from "../../../types/snippet";
+import ViewerSpinner from "./ViewerSpinner.vue";
 
 const props = defineProps<{ documentId: string }>();
 
@@ -69,7 +70,10 @@ async function jumpToAnchor(locator: SnippetLocator) {
   range.setEnd(endNode, endOffset);
   const rect = range.getBoundingClientRect();
   const rootRect = viewerRoot.value.getBoundingClientRect();
-  viewerRoot.value.scrollBy({ top: rect.top - rootRect.top - rootRect.height * 0.28, behavior: "smooth" });
+  viewerRoot.value.scrollBy({
+    top: rect.top - rootRect.top - rootRect.height * 0.28,
+    behavior: "smooth",
+  });
 
   window.dispatchEvent(new CustomEvent("catgraph:programmatic-selection"));
   window.setTimeout(() => {
@@ -88,7 +92,7 @@ defineExpose({ jumpToAnchor });
 
 <template>
   <div ref="viewerRoot" class="text-viewer">
-    <p v-if="isLoading" class="text-state">读取中...</p>
+    <ViewerSpinner v-if="isLoading" />
     <p v-else-if="error" class="text-state error">{{ error }}</p>
     <!-- eslint-disable-next-line vue/no-v-html -->
     <article v-else-if="html" class="markdown-body" v-html="html" />
@@ -112,7 +116,7 @@ defineExpose({ jumpToAnchor });
 }
 
 .text-state.error {
-  color: #d44747;
+  color: var(--danger-color);
 }
 
 .markdown-body :deep(h1) {
@@ -130,7 +134,7 @@ defineExpose({ jumpToAnchor });
 }
 
 .markdown-body :deep(pre) {
-  background: rgb(0 0 0 / 5%);
+  background: var(--surface-muted-color);
   padding: 10px 12px;
   border-radius: 6px;
   overflow-x: auto;

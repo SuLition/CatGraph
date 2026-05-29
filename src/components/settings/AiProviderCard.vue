@@ -12,16 +12,16 @@ import {
 } from "@vicons/fluent";
 import { PROVIDER_PRESETS } from "../../constants/ai-providers";
 import { testProviderConnection } from "../../services/ai-client.service";
-import type {
-  AiProviderConfig,
-  AiProviderId,
-  ProviderTestResult,
-} from "../../types/ai-provider";
+import type { AiProviderConfig, AiProviderId, ProviderTestResult } from "../../types/ai-provider";
 
 const props = defineProps<{
   providerId: AiProviderId;
   config: AiProviderConfig;
   initiallyExpanded?: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: "update:config", config: AiProviderConfig): void;
 }>();
 
 const preset = computed(() => PROVIDER_PRESETS[props.providerId]);
@@ -48,6 +48,10 @@ function toggleExpand() {
 
 function toggleShowKey() {
   showKey.value = !showKey.value;
+}
+
+function patchConfig(patch: Partial<AiProviderConfig>) {
+  emit("update:config", { ...props.config, ...patch });
 }
 
 async function runTest() {
@@ -84,10 +88,11 @@ async function runTest() {
 
       <label class="head-switch" @click.stop>
         <input
-          v-model="config.enabled"
+          :checked="config.enabled"
           type="checkbox"
           class="switch-input"
           :aria-label="`启用 ${preset.shortLabel}`"
+          @change="patchConfig({ enabled: ($event.target as HTMLInputElement).checked })"
         />
       </label>
     </header>
@@ -97,12 +102,13 @@ async function runTest() {
         <span class="field-label">API Key</span>
         <div class="key-input">
           <input
-            v-model="config.apiKey"
+            :value="config.apiKey"
             :type="showKey ? 'text' : 'password'"
             class="text-input"
             spellcheck="false"
             autocomplete="off"
             :placeholder="`输入 ${preset.shortLabel} API Key`"
+            @input="patchConfig({ apiKey: ($event.target as HTMLInputElement).value })"
           />
           <button
             type="button"
@@ -110,10 +116,7 @@ async function runTest() {
             :aria-label="showKey ? '隐藏 Key' : '显示 Key'"
             @click="toggleShowKey"
           >
-            <component
-              :is="showKey ? EyeOff20Regular : Eye20Regular"
-              aria-hidden="true"
-            />
+            <component :is="showKey ? EyeOff20Regular : Eye20Regular" aria-hidden="true" />
           </button>
         </div>
         <a class="hint-link" :href="preset.docsUrl" target="_blank" rel="noopener">
@@ -125,19 +128,24 @@ async function runTest() {
       <label class="field">
         <span class="field-label">Base URL</span>
         <input
-          v-model="config.baseUrl"
+          :value="config.baseUrl"
           type="text"
           class="text-input"
           spellcheck="false"
           autocomplete="off"
           :placeholder="preset.defaultBaseUrl"
+          @input="patchConfig({ baseUrl: ($event.target as HTMLInputElement).value })"
         />
         <span class="hint-text">留空表示使用默认地址 · {{ preset.defaultBaseUrl }}</span>
       </label>
 
       <label class="field">
         <span class="field-label">默认模型</span>
-        <select v-model="config.defaultModel" class="text-input">
+        <select
+          :value="config.defaultModel"
+          class="text-input"
+          @change="patchConfig({ defaultModel: ($event.target as HTMLSelectElement).value })"
+        >
           <option v-for="model in preset.models" :key="model" :value="model">
             {{ model }}
           </option>
@@ -155,7 +163,11 @@ async function runTest() {
           {{ testing ? "测试中…" : "测试连接" }}
         </button>
 
-        <div v-if="testResult" class="test-result" :class="testResult.success ? 'is-ok' : 'is-fail'">
+        <div
+          v-if="testResult"
+          class="test-result"
+          :class="testResult.success ? 'is-ok' : 'is-fail'"
+        >
           <component
             :is="testResult.success ? Checkmark20Filled : Dismiss20Filled"
             class="result-icon"
@@ -177,7 +189,7 @@ async function runTest() {
 }
 
 .provider-card.is-expanded {
-  box-shadow: 0 1px 3px rgb(15 23 42 / 4%);
+  box-shadow: 0 1px 3px var(--shadow-soft-color);
 }
 
 .card-head {
@@ -233,7 +245,7 @@ async function runTest() {
 }
 
 .status-badge.tone-muted {
-  background: rgb(137 160 174 / 14%);
+  background: var(--active-item-background-color);
   color: var(--muted-text-color);
 }
 
@@ -258,8 +270,8 @@ async function runTest() {
   width: 38px;
   height: 22px;
   border-radius: 11px;
-  border: 1px solid rgb(137 160 174 / 28%);
-  background: #d8e1e6;
+  border: 1px solid var(--border-strong-color);
+  background: var(--switch-track-color);
   position: relative;
   cursor: pointer;
 }
@@ -272,8 +284,8 @@ async function runTest() {
   width: 16px;
   height: 16px;
   border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 18%);
+  background: var(--surface-control-strong-color);
+  box-shadow: 0 1px 2px var(--shadow-soft-color);
   transition: transform 160ms ease;
 }
 
@@ -288,7 +300,7 @@ async function runTest() {
 
 .card-body {
   padding: 4px 16px 18px;
-  border-top: 1px solid rgb(137 160 174 / 12%);
+  border-top: 1px solid var(--border-subtle-color);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -309,8 +321,8 @@ async function runTest() {
 .text-input {
   height: 32px;
   border-radius: 6px;
-  border: 1px solid rgb(137 160 174 / 22%);
-  background: rgb(255 255 255 / 72%);
+  border: 1px solid var(--border-control-color);
+  background: var(--surface-control-color);
   color: var(--text-color);
   font: inherit;
   font-size: 13px;
@@ -449,7 +461,7 @@ select.text-input {
 }
 
 .test-result.is-fail {
-  color: #b42318;
+  color: var(--danger-color);
 }
 
 .result-icon {

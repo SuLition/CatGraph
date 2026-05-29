@@ -154,7 +154,7 @@ const nodes = ref<Node<GraphNodeData>[]>([
   },
 ]);
 
-const BORDER_STRONG = "#b3c0c7";
+const BORDER_STRONG = "var(--border-strong-color)";
 
 function edgeStyle(from: string, to: string, dashed = false) {
   const isSel = props.selected === from || props.selected === to;
@@ -168,7 +168,7 @@ function edgeStyle(from: string, to: string, dashed = false) {
 function labelStyle(from: string, to: string) {
   const isSel = props.selected === from || props.selected === to;
   return {
-    fill: isSel ? settingsStore.settings.appearance.accentColor : "#5a6670",
+    fill: isSel ? settingsStore.settings.appearance.accentColor : "var(--muted-text-color)",
     fontWeight: isSel ? 600 : 500,
     fontFamily: "ui-monospace, 'JetBrains Mono', monospace",
     fontSize: 10,
@@ -177,8 +177,8 @@ function labelStyle(from: string, to: string) {
 function labelBg(from: string, to: string) {
   const isSel = props.selected === from || props.selected === to;
   return {
-    fill: "#ffffff",
-    stroke: isSel ? settingsStore.settings.appearance.accentColor : "rgba(137, 160, 174, 0.4)",
+    fill: "var(--surface-control-strong-color)",
+    stroke: isSel ? settingsStore.settings.appearance.accentColor : "var(--border-strong-color)",
   };
 }
 
@@ -285,7 +285,7 @@ function legendSwatch(type: NodeType) {
       <span class="legend-divider"></span>
       <div class="legend-item">
         <svg width="20" height="10" aria-hidden="true">
-          <line x1="0" y1="5" x2="20" y2="5" stroke="#5a6670" stroke-width="1" />
+          <line x1="0" y1="5" x2="20" y2="5" stroke="currentColor" stroke-width="1" />
         </svg>
         引用
       </div>
@@ -296,7 +296,7 @@ function legendSwatch(type: NodeType) {
             y1="5"
             x2="20"
             y2="5"
-            stroke="#5a6670"
+            stroke="currentColor"
             stroke-width="1"
             stroke-dasharray="3 2"
           />
@@ -313,7 +313,7 @@ function legendSwatch(type: NodeType) {
   height: 100%;
   position: relative;
   overflow: hidden;
-  background-color: #fafbfc;
+  background-color: var(--content-background-color);
 }
 
 .canvas-corner {
@@ -324,7 +324,7 @@ function legendSwatch(type: NodeType) {
   align-items: center;
   gap: 8px;
   font-size: 10px;
-  color: #8a939c;
+  color: var(--subtle-text-color);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   z-index: 2;
@@ -334,7 +334,7 @@ function legendSwatch(type: NodeType) {
 .corner-icon {
   width: 13px;
   height: 13px;
-  color: #8a939c;
+  color: var(--subtle-text-color);
 }
 
 .flow {
@@ -350,13 +350,13 @@ function legendSwatch(type: NodeType) {
   align-items: center;
   gap: 14px;
   padding: 8px 14px;
-  background: rgb(255 255 255 / 80%);
+  background: var(--surface-color);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgb(137 160 174 / 22%);
+  border: 1px solid var(--border-control-color);
   border-radius: 6px;
   font-size: 11px;
-  color: #5a6670;
+  color: var(--muted-text-color);
   z-index: 2;
 }
 
@@ -375,7 +375,7 @@ function legendSwatch(type: NodeType) {
 .legend-divider {
   width: 1px;
   align-self: stretch;
-  background: rgb(137 160 174 / 22%);
+  background: var(--border-control-color);
 }
 </style>
 

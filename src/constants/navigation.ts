@@ -1,6 +1,6 @@
 import type { NavId, NavRouteMeta } from "../types/navigation";
 
-export const DEFAULT_NAV_ID: NavId = "experiments";
+export const DEFAULT_NAV_ID: NavId = "documents";
 
 export const NAV_ROUTES: Record<NavId, NavRouteMeta> = {
   documents: {

@@ -6,7 +6,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   appearance: {
     theme: "system",
     density: "comfortable",
-    accentColor: "#1a6b8a",
+    accentColor: "#d97757",
   },
   workspace: {
     defaultProjectPath: "",

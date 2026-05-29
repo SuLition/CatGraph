@@ -60,9 +60,9 @@ async function handleClick() {
   width: 22px;
   height: 22px;
   padding: 0;
-  border: 1px solid rgb(137 160 174 / 22%);
+  border: 1px solid var(--border-control-color);
   border-radius: 4px;
-  background: rgb(255 255 255 / 50%);
+  background: var(--surface-control-color);
   color: var(--muted-text-color);
   cursor: pointer;
 }

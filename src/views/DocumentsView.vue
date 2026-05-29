@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watchEffect } from "vue";
+import { computed, onMounted, ref } from "vue";
 import DocumentReader from "../components/documents/DocumentReader.vue";
 import SnippetPanel from "../components/documents/snippets/SnippetPanel.vue";
 import { useDocumentsStore } from "../stores/documents.store";
@@ -13,16 +13,6 @@ const readerRef = ref<{ jumpTo: (locator: SnippetLocator) => void } | null>(null
 onMounted(() => {
   if (documents.documents.length === 0) {
     void documents.load();
-  }
-});
-
-watchEffect(() => {
-  const selected = workspace.selectedSideListIds.documents;
-  if (selected && documents.byId(selected)) return;
-
-  const first = documents.recent[0];
-  if (first) {
-    workspace.selectedSideListIds.documents = first.id;
   }
 });
 

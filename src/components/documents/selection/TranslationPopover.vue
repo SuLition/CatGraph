@@ -79,10 +79,12 @@ async function handleCopy() {
   z-index: 9999;
   min-width: 280px;
   max-width: 420px;
-  background: rgb(255 255 255 / 96%);
-  color: #222;
+  background: var(--surface-popover-color);
+  color: var(--text-color);
   border-radius: 6px;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 10%), 0 1px 3px rgb(0 0 0 / 6%);
+  box-shadow:
+    0 4px 20px var(--shadow-popover-color),
+    0 1px 3px var(--shadow-soft-color);
   transform: translateX(-50%);
   font-size: 12px;
   line-height: 1.5;
@@ -116,7 +118,7 @@ async function handleCopy() {
 
 .popover-label {
   font-size: 11px;
-  color: rgb(0 0 0 / 40%);
+  color: var(--subtle-text-color);
 }
 
 .popover-text {
@@ -124,44 +126,44 @@ async function handleCopy() {
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
-  color: #222;
+  color: var(--text-color);
 }
 
 .popover-error {
-  color: #dc2626;
+  color: var(--danger-color);
 }
 
 .popover-btn {
   padding: 4px 10px;
-  background: rgb(0 0 0 / 5%);
+  background: var(--surface-control-color);
   border: none;
   border-radius: 4px;
-  color: #444;
+  color: var(--muted-text-color);
   font-size: 12px;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .popover-btn:hover {
-  background: rgb(0 0 0 / 10%);
-  color: #111;
+  background: var(--hover-color);
+  color: var(--text-color);
 }
 
 .popover-btn-primary {
-  background: rgb(59 130 246 / 12%);
-  color: #2563eb;
+  background: var(--accent-color-soft);
+  color: var(--accent-color);
 }
 
 .popover-btn-primary:hover {
-  background: rgb(59 130 246 / 22%);
+  background: var(--accent-border-color);
 }
 
 .spinner {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgb(0 0 0 / 10%);
-  border-top-color: #666;
+  border: 2px solid var(--border-subtle-color);
+  border-top-color: var(--muted-text-color);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
   flex-shrink: 0;

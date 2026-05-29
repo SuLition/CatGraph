@@ -27,23 +27,23 @@ const toasts = useToastStore();
 .toast {
   pointer-events: auto;
   padding: 8px 14px;
-  background: rgb(30 30 30 / 95%);
+  background: var(--surface-overlay-color);
   color: #fff;
   border-radius: 6px;
   font-size: 12px;
-  box-shadow: 0 4px 18px rgb(0 0 0 / 22%);
+  box-shadow: 0 4px 18px var(--shadow-popover-color);
   max-width: 320px;
 }
 
 .toast[data-tone="success"] {
-  background: #10b981;
+  background: var(--success-color);
 }
 
 .toast[data-tone="warning"] {
-  background: #f59e0b;
+  background: var(--warning-color);
 }
 
 .toast[data-tone="error"] {
-  background: #d44747;
+  background: var(--danger-color);
 }
 </style>

@@ -54,10 +54,12 @@ function isDisabled(id: SelectionMenuAction["id"]): boolean {
   z-index: 9999;
   display: flex;
   align-items: stretch;
-  background: rgb(255 255 255 / 96%);
-  color: #222;
+  background: var(--surface-popover-color);
+  color: var(--text-color);
   border-radius: 6px;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 10%), 0 1px 3px rgb(0 0 0 / 6%);
+  box-shadow:
+    0 4px 20px var(--shadow-popover-color),
+    0 1px 3px var(--shadow-soft-color);
   overflow: hidden;
   transform: translateX(-50%);
   font-size: 12px;
@@ -73,7 +75,7 @@ function isDisabled(id: SelectionMenuAction["id"]): boolean {
 }
 
 .menu-item:hover:not(:disabled) {
-  background: rgb(0 0 0 / 6%);
+  background: var(--hover-color);
 }
 
 .menu-item:disabled {
@@ -82,6 +84,6 @@ function isDisabled(id: SelectionMenuAction["id"]): boolean {
 }
 
 .menu-item + .menu-item {
-  border-left: 1px solid rgb(0 0 0 / 10%);
+  border-left: 1px solid var(--border-subtle-color);
 }
 </style>

@@ -15,7 +15,7 @@ const shouldShowSub = computed(() => labelMode.value !== "code");
 const shouldShowDetails = computed(() => props.data.big && labelMode.value === "full");
 
 function nodeFill(type: NodeType) {
-  return `oklch(99% 0.005 ${TYPE_TOKENS[type].hue})`;
+  return `color-mix(in srgb, var(--surface-control-strong-color) 88%, oklch(92% 0.05 ${TYPE_TOKENS[type].hue}))`;
 }
 function nodeStroke(type: NodeType, isSelected: boolean) {
   const l = isSelected ? 50 : 70;
@@ -100,7 +100,7 @@ function typeLabelFill(type: NodeType) {
 .title {
   font-size: 13px;
   font-weight: 600;
-  color: #1f2933;
+  color: var(--text-color);
   margin-top: 2px;
 }
 .is-big .title {
@@ -109,7 +109,7 @@ function typeLabelFill(type: NodeType) {
 }
 .sub {
   font-size: 11px;
-  color: #5a6670;
+  color: var(--muted-text-color);
   font-family: ui-monospace, "JetBrains Mono", monospace;
   margin-top: 2px;
 }
@@ -119,19 +119,19 @@ function typeLabelFill(type: NodeType) {
 .formula-label {
   margin-top: 10px;
   font-size: 10px;
-  color: #8a939c;
+  color: var(--subtle-text-color);
   letter-spacing: 0.06em;
 }
 .formula {
   font-size: 13px;
-  color: #1f2933;
+  color: var(--text-color);
   font-family: ui-monospace, "JetBrains Mono", monospace;
   margin-top: 4px;
 }
 .footer {
   margin-top: 4px;
   font-size: 10px;
-  color: #8a939c;
+  color: var(--subtle-text-color);
 }
 .emphasis-dot {
   position: absolute;

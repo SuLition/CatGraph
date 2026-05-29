@@ -2,12 +2,15 @@ import { invoke } from "@tauri-apps/api/core";
 import { PROVIDER_ORDER } from "../constants/ai-providers";
 import { DEFAULT_SETTINGS } from "../constants/settings";
 import type { AiProviderConfig, AiProviderId, AiSettings } from "../types/ai-provider";
-import type { AppSettings } from "../types/settings";
+import type { AppSettings, DensityMode, ThemeMode } from "../types/settings";
 
 const STORAGE_KEY = "catgraph.settings";
 
 export const SIDE_LIST_MIN_WIDTH = 180;
 export const SIDE_LIST_MAX_WIDTH = 480;
+const THEME_MODES: ThemeMode[] = ["system", "light", "dark"];
+const DENSITY_MODES: DensityMode[] = ["comfortable", "compact"];
+const HEX_COLOR_RE = /^#[0-9a-f]{6}$/i;
 
 function isTauriRuntime() {
   return "__TAURI_INTERNALS__" in window;
@@ -16,6 +19,24 @@ function isTauriRuntime() {
 function clampSideListWidth(value: number) {
   if (!Number.isFinite(value)) return DEFAULT_SETTINGS.workspace.sideListWidth;
   return Math.min(SIDE_LIST_MAX_WIDTH, Math.max(SIDE_LIST_MIN_WIDTH, Math.round(value)));
+}
+
+function normalizeTheme(value: unknown): ThemeMode {
+  return THEME_MODES.includes(value as ThemeMode)
+    ? (value as ThemeMode)
+    : DEFAULT_SETTINGS.appearance.theme;
+}
+
+function normalizeDensity(value: unknown): DensityMode {
+  return DENSITY_MODES.includes(value as DensityMode)
+    ? (value as DensityMode)
+    : DEFAULT_SETTINGS.appearance.density;
+}
+
+function normalizeAccentColor(value: unknown): string {
+  return typeof value === "string" && HEX_COLOR_RE.test(value)
+    ? value.toLowerCase()
+    : DEFAULT_SETTINGS.appearance.accentColor;
 }
 
 function normalizeProvider(
@@ -40,7 +61,7 @@ function normalizeAi(input: Partial<AiSettings> | undefined): AiSettings {
     providers[id] = normalizeProvider(id, input?.providers?.[id]);
   }
 
-  const validIds: (AiSettings["defaultProvider"])[] = [...PROVIDER_ORDER, ""];
+  const validIds: AiSettings["defaultProvider"][] = [...PROVIDER_ORDER, ""];
   const incomingDefault = input?.defaultProvider ?? "";
   const defaultProvider = (validIds as string[]).includes(incomingDefault)
     ? (incomingDefault as AiSettings["defaultProvider"])
@@ -55,8 +76,9 @@ export function normalizeSettings(value: unknown): AppSettings {
   return {
     version: 1,
     appearance: {
-      ...DEFAULT_SETTINGS.appearance,
-      ...(input?.appearance ?? {}),
+      theme: normalizeTheme(input?.appearance?.theme),
+      density: normalizeDensity(input?.appearance?.density),
+      accentColor: normalizeAccentColor(input?.appearance?.accentColor),
     },
     workspace: {
       ...DEFAULT_SETTINGS.workspace,

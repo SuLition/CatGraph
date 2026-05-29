@@ -159,7 +159,7 @@ function resetSettings() {
 }
 
 .settings-status.is-error {
-  color: #b42318;
+  color: var(--danger-color);
 }
 
 .button-icon {
@@ -178,7 +178,7 @@ function resetSettings() {
   padding: 0 14px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: rgb(255 255 255 / 50%);
+  background: var(--surface-control-color);
   color: var(--muted-text-color);
   font-size: 12px;
   font-weight: 600;
@@ -239,7 +239,7 @@ function resetSettings() {
   gap: 18px;
   min-height: var(--settings-row-min-height, 62px);
   padding: var(--settings-row-padding, 14px 20px);
-  border-top: 1px solid rgb(137 160 174 / 10%);
+  border-top: 1px solid var(--border-subtle-color);
 }
 
 .settings-section .section-heading + .setting-row,
@@ -275,8 +275,8 @@ function resetSettings() {
   display: inline-flex;
   gap: 0;
   padding: 3px;
-  border: 1px solid rgb(137 160 174 / 18%);
-  background: rgb(249 249 247 / 80%);
+  border: 1px solid var(--border-color);
+  background: var(--surface-muted-color);
   border-radius: 8px;
   flex: 0 0 auto;
 }
@@ -293,10 +293,10 @@ function resetSettings() {
 }
 
 .settings-section .segment.is-active {
-  background: #ffffff;
+  background: var(--surface-control-strong-color);
   color: var(--text-color);
   font-weight: 600;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+  box-shadow: 0 1px 2px var(--shadow-soft-color);
 }
 
 .settings-section .color-field {
@@ -305,13 +305,35 @@ function resetSettings() {
   gap: 8px;
 }
 
+.settings-section .accent-presets {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.settings-section .accent-swatch {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid var(--surface-control-strong-color);
+  border-radius: 11px;
+  box-shadow: 0 0 0 1px var(--border-strong-color);
+  cursor: pointer;
+}
+
+.settings-section .accent-swatch.is-active {
+  box-shadow:
+    0 0 0 1px var(--surface-control-strong-color),
+    0 0 0 3px var(--accent-color);
+}
+
 .settings-section .color-field input {
   width: 34px;
   height: 28px;
   padding: 0;
-  border: 1px solid rgb(137 160 174 / 28%);
+  border: 1px solid var(--border-strong-color);
   border-radius: 6px;
-  background: #ffffff;
+  background: var(--surface-control-strong-color);
 }
 
 .settings-section .color-field code,
@@ -331,8 +353,8 @@ function resetSettings() {
 .settings-section .number-input {
   height: 30px;
   border-radius: 6px;
-  border: 1px solid rgb(137 160 174 / 22%);
-  background: rgb(255 255 255 / 72%);
+  border: 1px solid var(--border-control-color);
+  background: var(--surface-control-color);
   color: var(--text-color);
   font: inherit;
   font-size: 13px;
@@ -360,8 +382,8 @@ function resetSettings() {
   width: 38px;
   height: 22px;
   border-radius: 11px;
-  border: 1px solid rgb(137 160 174 / 28%);
-  background: #d8e1e6;
+  border: 1px solid var(--border-strong-color);
+  background: var(--switch-track-color);
   position: relative;
   flex: 0 0 auto;
   cursor: pointer;
@@ -375,8 +397,8 @@ function resetSettings() {
   width: 16px;
   height: 16px;
   border-radius: 8px;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 18%);
+  background: var(--surface-control-strong-color);
+  box-shadow: 0 1px 2px var(--shadow-soft-color);
   transition: transform 160ms ease;
 }
 
@@ -392,8 +414,8 @@ function resetSettings() {
 .settings-section .format-chip {
   padding: 5px 10px;
   border-radius: 6px;
-  background: oklch(96% 0.05 145);
-  border: 1px solid oklch(85% 0.08 145);
+  background: color-mix(in srgb, var(--success-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success-color) 28%, transparent);
   font-weight: 600;
 }
 

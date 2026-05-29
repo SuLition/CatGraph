@@ -160,6 +160,7 @@ function handleSelect(id: string) {
   min-height: 0;
   font-size: 13px;
   color: var(--muted-text-color);
+  background: var(--sidelist-background-color);
 }
 
 .side-list-header {
@@ -200,8 +201,8 @@ function handleSelect(id: string) {
   margin-top: 8px;
   height: 28px;
   padding: 0 8px;
-  background: rgb(255 255 255 / 50%);
-  border: 1px solid rgb(137 160 174 / 22%);
+  background: var(--surface-control-color);
+  border: 1px solid var(--border-control-color);
   border-radius: 6px;
   color: var(--subtle-text-color);
 }
@@ -224,7 +225,7 @@ function handleSelect(id: string) {
   font: inherit;
   font-size: 10px;
   padding: 0 4px;
-  border: 1px solid rgb(137 160 174 / 26%);
+  border: 1px solid var(--border-strong-color);
   border-radius: 3px;
   color: var(--subtle-text-color);
 }
@@ -295,8 +296,8 @@ function handleSelect(id: string) {
 }
 
 .list-item.is-active {
-  background: color-mix(in srgb, var(--accent-color) 10%, transparent);
-  border-color: color-mix(in srgb, var(--accent-color) 22%, transparent);
+  background: var(--accent-color-soft);
+  border-color: var(--accent-border-color);
 }
 
 .item-row,
@@ -321,7 +322,7 @@ function handleSelect(id: string) {
   height: 6px;
   border-radius: 3px;
   flex-shrink: 0;
-  background: var(--tone-color, #9aa8b1);
+  background: var(--tone-color, var(--subtle-text-color));
 }
 
 .item-label {
@@ -398,8 +399,8 @@ function handleSelect(id: string) {
   height: 20px;
   padding: 0 6px;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--tone-color, #9aa8b1) 14%, transparent);
-  color: var(--tone-color, #5a6670);
+  background: color-mix(in srgb, var(--tone-color, var(--subtle-text-color)) 14%, transparent);
+  color: var(--tone-color, var(--subtle-text-color));
   font-size: 10px;
   font-weight: 700;
 }
@@ -466,22 +467,22 @@ function handleSelect(id: string) {
 }
 
 .tone-success {
-  --tone-color: #10b981;
+  --tone-color: var(--success-color);
 }
 
 .tone-warning {
-  --tone-color: #f59e0b;
+  --tone-color: var(--warning-color);
 }
 
 .tone-info {
-  --tone-color: #1a6b8a;
+  --tone-color: var(--accent-color);
 }
 
 .tone-danger {
-  --tone-color: #d44747;
+  --tone-color: var(--danger-color);
 }
 
 .tone-muted {
-  --tone-color: #9aa8b1;
+  --tone-color: var(--subtle-text-color);
 }
 </style>

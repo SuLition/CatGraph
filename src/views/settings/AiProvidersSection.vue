@@ -3,7 +3,7 @@ import { computed } from "vue";
 import { PROVIDER_ORDER, PROVIDER_PRESETS } from "../../constants/ai-providers";
 import AiProviderCard from "../../components/settings/AiProviderCard.vue";
 import { useSettingsStore } from "../../stores/settings.store";
-import type { AiProviderId } from "../../types/ai-provider";
+import type { AiProviderConfig, AiProviderId } from "../../types/ai-provider";
 
 const settingsStore = useSettingsStore();
 const ai = settingsStore.settings.ai;
@@ -20,6 +20,10 @@ const defaultProviderOptions = computed(() => [
 function setDefaultProvider(id: AiProviderId | "") {
   ai.defaultProvider = id;
 }
+
+function updateProviderConfig(id: AiProviderId, config: AiProviderConfig) {
+  Object.assign(ai.providers[id], config);
+}
 </script>
 
 <template>
@@ -32,12 +36,16 @@ function setDefaultProvider(id: AiProviderId | "") {
     <div class="setting-row">
       <div class="setting-copy">
         <span class="setting-title">默认服务商</span>
-        <span class="setting-desc">应用内 AI 操作的默认调用方,仅展示已启用且填了 Key 的服务商。</span>
+        <span class="setting-desc"
+          >应用内 AI 操作的默认调用方,仅展示已启用且填了 Key 的服务商。</span
+        >
       </div>
       <select
         class="text-input default-select"
         :value="ai.defaultProvider"
-        @change="setDefaultProvider(($event.target as HTMLSelectElement).value as AiProviderId | '')"
+        @change="
+          setDefaultProvider(($event.target as HTMLSelectElement).value as AiProviderId | '')
+        "
       >
         <option
           v-for="option in defaultProviderOptions"
@@ -56,6 +64,7 @@ function setDefaultProvider(id: AiProviderId | "") {
       :key="id"
       :provider-id="id"
       :config="ai.providers[id]"
+      @update:config="updateProviderConfig(id, $event)"
     />
   </section>
 </template>

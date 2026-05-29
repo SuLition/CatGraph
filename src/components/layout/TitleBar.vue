@@ -1,16 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import {
-  BorderOutlined,
-  CloseOutlined,
-  MinusOutlined,
-} from "@vicons/antd";
-import {
-  ArrowSort20Regular,
-  PanelLeft20Regular,
-  PanelLeftExpand20Regular,
-} from "@vicons/fluent";
+import { BorderOutlined, CloseOutlined, MinusOutlined } from "@vicons/antd";
+import { ArrowSort20Regular, PanelLeft20Regular, PanelLeftExpand20Regular } from "@vicons/fluent";
 
 const props = defineProps<{
   sideListCollapsed?: boolean;
@@ -112,8 +104,9 @@ function handleAppIconClick() {
   align-items: center;
   justify-content: space-between;
   height: 36px;
-  border-bottom: 1px solid rgb(137 160 174 / 18%);
-  color: #5a6670;
+  background: var(--titlebar-background-color);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--titlebar-text-color);
   user-select: none;
 }
 
@@ -181,11 +174,11 @@ function handleAppIconClick() {
 }
 
 .nav-button {
-  color: #5f6f78;
+  color: var(--nav-button-color);
 }
 
 .nav-button.is-disabled {
-  color: #b3c0c7;
+  color: var(--nav-button-disabled-color);
 }
 
 .menu {
@@ -214,7 +207,7 @@ function handleAppIconClick() {
 
 .app-icon.is-active {
   color: var(--accent-color);
-  background: rgb(137 160 174 / 12%);
+  background: var(--active-item-background-color);
 }
 
 .titlebar-controls {
@@ -233,11 +226,11 @@ function handleAppIconClick() {
 
 .window-control {
   width: 44px;
-  color: #18212a;
+  color: var(--titlebar-control-color);
 }
 
 .close-control:hover {
   color: #ffffff;
-  background: #d83b36;
+  background: var(--danger-color-hover);
 }
 </style>

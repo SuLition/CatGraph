@@ -22,9 +22,10 @@ defineProps<{
   gap: 16px;
   height: 24px;
   padding: 0 12px;
-  border-top: 1px solid rgb(137 160 174 / 18%);
+  background: var(--statusbar-background-color);
+  border-top: 1px solid var(--border-color);
   font-size: 11px;
-  color: #5a6670;
+  color: var(--muted-text-color);
   user-select: none;
 }
 
@@ -47,6 +48,6 @@ defineProps<{
   width: 6px;
   height: 6px;
   border-radius: 3px;
-  background: #10b981;
+  background: var(--success-color);
 }
 </style>

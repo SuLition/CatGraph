@@ -26,13 +26,13 @@ defineProps<{
   width: 100%;
   height: 100%;
   min-height: 0;
-  color: #1f2933;
+  color: var(--text-color);
 }
 
 .placeholder-header {
   padding: 16px 20px;
-  border-bottom: 1px solid rgb(137 160 174 / 18%);
-  background: rgb(255 255 255 / 60%);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--panel-background-color);
 }
 
 .meta-row {
@@ -53,7 +53,7 @@ defineProps<{
 
 .code {
   font-family: "JetBrains Mono", ui-monospace, monospace;
-  color: #5a6670;
+  color: var(--muted-text-color);
   font-size: 11px;
 }
 
@@ -65,7 +65,7 @@ defineProps<{
 
 .page-desc {
   margin: 6px 0 0;
-  color: #8a939c;
+  color: var(--subtle-text-color);
   font-size: 12px;
 }
 </style>

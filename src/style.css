@@ -1,14 +1,7 @@
+@import "./styles/theme.css";
+
 :root {
-  --accent-color: #1a6b8a;
-  --accent-color-hover: #155a73;
-  --surface-color: rgb(255 255 255 / 62%);
-  --surface-soft-color: rgb(255 255 255 / 22%);
-  --text-color: #1f2933;
-  --muted-text-color: #5a6670;
-  --subtle-text-color: #8a939c;
-  --border-color: rgb(137 160 174 / 18%);
-  --hover-color: #dcebf0;
-  color: #1f2933;
+  color: var(--text-color);
   background: transparent;
   font-family:
     "Segoe UI",
@@ -42,17 +35,6 @@ button {
   font: inherit;
 }
 
-[data-theme="dark"] {
-  --surface-color: rgb(28 36 44 / 72%);
-  --surface-soft-color: rgb(28 36 44 / 36%);
-  --text-color: #ecf2f5;
-  --muted-text-color: #c0cbd2;
-  --subtle-text-color: #93a3ad;
-  --border-color: rgb(151 173 186 / 22%);
-  --hover-color: rgb(79 98 109 / 58%);
-  color: var(--text-color);
-}
-
 [data-density="compact"] {
   --settings-row-min-height: 50px;
   --settings-row-padding: 9px 14px;
@@ -70,7 +52,7 @@ button {
   min-width: 720px;
   height: 100%;
   overflow: hidden;
-  background: transparent;
+  background: var(--app-background-color);
 }
 
 body.is-resizing-side-list,

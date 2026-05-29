@@ -54,8 +54,8 @@ const tabs = ["图谱与流程", "原始数据", "修订历史", "导出"];
   align-items: center;
   gap: 20px;
   padding: 12px 20px;
-  border-bottom: 1px solid rgb(137 160 174 / 18%);
-  background: rgb(255 255 255 / 60%);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--panel-background-color);
   flex-shrink: 0;
 }
 
@@ -81,12 +81,12 @@ const tabs = ["图谱与流程", "原始数据", "修订历史", "导出"];
 
 .code {
   font-family: "JetBrains Mono", ui-monospace, monospace;
-  color: #5a6670;
+  color: var(--muted-text-color);
   font-size: 11px;
 }
 
 .rev {
-  color: #8a939c;
+  color: var(--subtle-text-color);
   font-size: 11px;
 }
 
@@ -94,7 +94,7 @@ const tabs = ["图谱与流程", "原始数据", "修订历史", "导出"];
   margin: 4px 0 0;
   font-size: 18px;
   font-weight: 600;
-  color: #1f2933;
+  color: var(--text-color);
 }
 
 .tabs {
@@ -102,8 +102,8 @@ const tabs = ["图谱与流程", "原始数据", "修订历史", "导出"];
   display: flex;
   gap: 0;
   padding: 3px;
-  background: rgb(249 249 247 / 80%);
-  border: 1px solid rgb(137 160 174 / 18%);
+  background: var(--surface-muted-color);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
 }
 
@@ -113,16 +113,16 @@ const tabs = ["图谱与流程", "原始数据", "修订历史", "导出"];
   border: 0;
   border-radius: 5px;
   background: transparent;
-  color: #5a6670;
+  color: var(--muted-text-color);
   cursor: pointer;
   font-weight: 400;
 }
 
 .tab.is-active {
-  background: #ffffff;
-  color: #1f2933;
+  background: var(--surface-control-strong-color);
+  color: var(--text-color);
   font-weight: 600;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+  box-shadow: 0 1px 2px var(--shadow-soft-color);
 }
 
 .actions {
@@ -165,7 +165,7 @@ const tabs = ["图谱与流程", "原始数据", "修订历史", "导出"];
   padding: 0 14px;
   border-radius: 6px;
   border: 0;
-  background: #1a6b8a;
+  background: var(--accent-color);
   color: #ffffff;
   font-size: 12px;
   font-weight: 600;
@@ -173,7 +173,7 @@ const tabs = ["图谱与流程", "原始数据", "修订历史", "导出"];
 }
 
 .run-btn:hover {
-  background: #155a73;
+  background: var(--accent-color-hover);
 }
 
 .run-icon {

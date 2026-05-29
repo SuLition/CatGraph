@@ -73,7 +73,8 @@ function handleSelect(id: NavId) {
   gap: 4px;
   padding-top: 6px;
   padding-bottom: 6px;
-  border-right: 1px solid rgb(137 160 174 / 18%);
+  background: var(--activitybar-background-color);
+  border-right: 1px solid var(--border-color);
 }
 
 .activity-spacer {
@@ -89,7 +90,7 @@ function handleSelect(id: NavId) {
   height: 36px;
   border: 0;
   border-radius: 6px;
-  color: #5a6670;
+  color: var(--muted-text-color);
   background: transparent;
   cursor: pointer;
 }
@@ -100,7 +101,7 @@ function handleSelect(id: NavId) {
 
 .activity-button.is-active {
   color: var(--accent-color);
-  background: rgb(137 160 174 / 12%);
+  background: var(--active-item-background-color);
 }
 
 .activity-icon {

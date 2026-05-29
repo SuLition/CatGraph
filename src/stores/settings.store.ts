@@ -35,10 +35,25 @@ function resolveTheme(settings: AppSettings) {
 
 function applyRuntimeSettings(settings: AppSettings) {
   const root = document.documentElement;
-  root.dataset.theme = resolveTheme(settings);
+  const theme = resolveTheme(settings);
+  root.dataset.theme = theme;
   root.dataset.density = settings.appearance.density;
+  root.style.colorScheme = theme;
   root.style.setProperty("--accent-color", settings.appearance.accentColor);
   root.style.setProperty("--side-list-width", `${settings.workspace.sideListWidth}px`);
+
+  void applyNativeWindowTheme(theme);
+}
+
+async function applyNativeWindowTheme(theme: "light" | "dark") {
+  if (!("__TAURI_INTERNALS__" in window)) return;
+
+  try {
+    const { getCurrentWindow } = await import("@tauri-apps/api/window");
+    await getCurrentWindow().setTheme(theme);
+  } catch (err) {
+    console.warn("failed to apply native window theme", err);
+  }
 }
 
 export const useSettingsStore = defineStore("settings", () => {
