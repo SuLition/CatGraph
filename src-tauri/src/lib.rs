@@ -114,6 +114,8 @@ pub fn run() {
             documents::import_document,
             documents::list_documents,
             documents::read_document_bytes,
+            documents::reveal_document,
+            documents::reveal_documents_folder,
             documents::delete_document,
             documents::rename_document,
             documents::set_document_folder,

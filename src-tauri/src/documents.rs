@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf};
+use std::{fs, path::PathBuf, process::Command};
 
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -73,6 +73,55 @@ fn documents_dir(app: &AppHandle) -> Result<PathBuf, String> {
 
 fn documents_index(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(data_root(app)?.join("documents.json"))
+}
+
+fn reveal_path(path: PathBuf, select_file: bool) -> Result<(), String> {
+    if !path.exists() {
+        return Err(format!("path not found: {}", path.display()));
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        let mut command = Command::new("explorer.exe");
+        if select_file {
+            command.arg(format!("/select,{}", path.display()));
+        } else {
+            command.arg(path);
+        }
+        command
+            .spawn()
+            .map_err(|err| format!("failed to open File Explorer: {err}"))?;
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let mut command = Command::new("open");
+        if select_file {
+            command.arg("-R").arg(path);
+        } else {
+            command.arg(path);
+        }
+        command
+            .spawn()
+            .map_err(|err| format!("failed to open Finder: {err}"))?;
+    }
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        let target = if select_file {
+            path.parent()
+                .ok_or_else(|| format!("path has no parent: {}", path.display()))?
+                .to_path_buf()
+        } else {
+            path
+        };
+        Command::new("xdg-open")
+            .arg(target)
+            .spawn()
+            .map_err(|err| format!("failed to open file manager: {err}"))?;
+    }
+
+    Ok(())
 }
 
 fn snippets_index(app: &AppHandle) -> Result<PathBuf, String> {
@@ -258,6 +307,22 @@ pub fn read_document_bytes(app: AppHandle, id: String) -> Result<Vec<u8>, String
         .ok_or_else(|| format!("document not found: {id}"))?;
     let path = data_root(&app)?.join(&doc.stored_path);
     fs::read(&path).map_err(|err| format!("failed to read document bytes: {err}"))
+}
+
+#[tauri::command]
+pub fn reveal_document(app: AppHandle, id: String) -> Result<(), String> {
+    let docs = load_documents(&app)?;
+    let doc = docs
+        .iter()
+        .find(|candidate| candidate.id == id)
+        .ok_or_else(|| format!("document not found: {id}"))?;
+    let path = data_root(&app)?.join(&doc.stored_path);
+    reveal_path(path, true)
+}
+
+#[tauri::command]
+pub fn reveal_documents_folder(app: AppHandle) -> Result<(), String> {
+    reveal_path(documents_dir(&app)?, false)
 }
 
 #[tauri::command]

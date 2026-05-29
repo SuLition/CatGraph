@@ -7,6 +7,7 @@ vi.mock("../services/documents.service", () => ({
   importDocument: vi.fn(),
   deleteDocument: vi.fn(),
   readDocumentBytes: vi.fn(),
+  revealDocument: vi.fn(),
   setDocumentFolder: vi.fn(),
   renameDocument: vi.fn(),
 }));
@@ -29,6 +30,7 @@ beforeEach(() => {
   vi.mocked(svc.listDocuments).mockReset();
   vi.mocked(svc.importDocument).mockReset();
   vi.mocked(svc.deleteDocument).mockReset();
+  vi.mocked(svc.revealDocument).mockReset();
   vi.mocked(svc.setDocumentFolder).mockReset();
   vi.mocked(svc.renameDocument).mockReset();
 });
@@ -95,5 +97,12 @@ describe("documents.store", () => {
     store.dropLocal(["a", "c"]);
     expect(store.documents.map((d) => d.id)).toEqual(["b"]);
     expect(svc.deleteDocument).not.toHaveBeenCalled();
+  });
+
+  it("reveal forwards document id", async () => {
+    vi.mocked(svc.revealDocument).mockResolvedValueOnce(undefined);
+    const store = useDocumentsStore();
+    await store.reveal("a");
+    expect(svc.revealDocument).toHaveBeenCalledWith("a");
   });
 });

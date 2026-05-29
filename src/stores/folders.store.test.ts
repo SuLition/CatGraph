@@ -8,6 +8,7 @@ vi.mock("../services/folders.service", () => ({
   renameFolder: vi.fn(),
   setFolderPinned: vi.fn(),
   deleteFolder: vi.fn(),
+  revealDocumentsFolder: vi.fn(),
 }));
 
 import * as svc from "../services/folders.service";
@@ -27,6 +28,7 @@ beforeEach(() => {
   vi.mocked(svc.renameFolder).mockReset();
   vi.mocked(svc.setFolderPinned).mockReset();
   vi.mocked(svc.deleteFolder).mockReset();
+  vi.mocked(svc.revealDocumentsFolder).mockReset();
 });
 
 describe("folders.store", () => {
@@ -79,5 +81,12 @@ describe("folders.store", () => {
     const result = await store.remove("a");
     expect(store.folders.map((f) => f.id)).toEqual(["c"]);
     expect(result.deletedDocumentIds).toEqual(["d1"]);
+  });
+
+  it("revealDocumentsLocation forwards to service", async () => {
+    vi.mocked(svc.revealDocumentsFolder).mockResolvedValueOnce(undefined);
+    const store = useFoldersStore();
+    await store.revealDocumentsLocation();
+    expect(svc.revealDocumentsFolder).toHaveBeenCalledOnce();
   });
 });

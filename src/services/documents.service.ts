@@ -43,3 +43,8 @@ export async function renameDocument(id: string, title: string): Promise<Documen
   ensureTauri();
   return invoke<DocumentRecord>("rename_document", { id, title });
 }
+
+export async function revealDocument(id: string): Promise<void> {
+  ensureTauri();
+  await invoke<void>("reveal_document", { id });
+}

@@ -28,7 +28,7 @@ const emit = defineEmits<{
   (e: "drag-end"): void;
   (e: "drop-enter"): void;
   (e: "drop-leave"): void;
-  (e: "drop-here"): void;
+  (e: "drop-here", event: DragEvent): void;
 }>();
 
 const inputEl = ref<HTMLInputElement | null>(null);
@@ -79,7 +79,7 @@ function onDragEnter() {
 function onDrop(event: DragEvent) {
   if (props.row.kind !== "folder") return;
   event.preventDefault();
-  emit("drop-here");
+  emit("drop-here", event);
 }
 </script>
 
@@ -124,7 +124,7 @@ function onDrop(event: DragEvent) {
         @keydown.esc.prevent="emit('rename-cancel')"
         @blur="commit"
       />
-      <span v-else class="row-label" @dblclick.stop="emit('rename-start')">{{ row.folder.name }}</span>
+      <span v-else class="row-label">{{ row.folder.name }}</span>
 
       <Pin20Filled v-if="!editing && row.folder.pinned" class="pin-icon" />
       <span v-if="!editing && row.totalDocumentCount > 0" class="row-count">
@@ -146,7 +146,7 @@ function onDrop(event: DragEvent) {
         @keydown.esc.prevent="emit('rename-cancel')"
         @blur="commit"
       />
-      <span v-else class="row-label" @dblclick.stop="emit('rename-start')">
+      <span v-else class="row-label">
         {{ row.document.title }}
       </span>
     </template>

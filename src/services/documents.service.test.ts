@@ -20,6 +20,7 @@ import {
   importDocument,
   listDocuments,
   readDocumentBytes,
+  revealDocument,
   renameDocument,
   setDocumentFolder,
 } from "./documents.service";
@@ -60,6 +61,12 @@ describe("documents.service", () => {
     invokeMock.mockResolvedValueOnce({ id: "doc-1", title: "new" });
     await renameDocument("doc-1", "new");
     expect(invokeMock).toHaveBeenCalledWith("rename_document", { id: "doc-1", title: "new" });
+  });
+
+  it("revealDocument forwards id", async () => {
+    invokeMock.mockResolvedValueOnce(null);
+    await revealDocument("doc-1");
+    expect(invokeMock).toHaveBeenCalledWith("reveal_document", { id: "doc-1" });
   });
 
   it("listDocuments returns empty array on first run", async () => {

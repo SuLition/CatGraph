@@ -19,6 +19,7 @@ import {
   createFolder,
   deleteFolder,
   listFolders,
+  revealDocumentsFolder,
   renameFolder,
   setFolderPinned,
 } from "./folders.service";
@@ -46,6 +47,12 @@ describe("folders.service", () => {
     invokeMock.mockResolvedValueOnce({ deletedFolderIds: [], deletedDocumentIds: [] });
     await deleteFolder("fld-1");
     expect(invokeMock).toHaveBeenCalledWith("delete_folder", { id: "fld-1" });
+  });
+
+  it("revealDocumentsFolder forwards command", async () => {
+    invokeMock.mockResolvedValueOnce(null);
+    await revealDocumentsFolder();
+    expect(invokeMock).toHaveBeenCalledWith("reveal_documents_folder");
   });
 
   it("throws in non-Tauri runtime", async () => {

@@ -39,3 +39,8 @@ export async function deleteFolder(id: string): Promise<DeleteFolderResult> {
   ensureTauri();
   return invoke<DeleteFolderResult>("delete_folder", { id });
 }
+
+export async function revealDocumentsFolder(): Promise<void> {
+  ensureTauri();
+  await invoke<void>("reveal_documents_folder");
+}

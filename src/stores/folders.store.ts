@@ -4,6 +4,7 @@ import {
   createFolder,
   deleteFolder,
   listFolders,
+  revealDocumentsFolder,
   renameFolder,
   setFolderPinned,
   type DeleteFolderResult,
@@ -54,9 +55,24 @@ export const useFoldersStore = defineStore("folders", () => {
     return result;
   }
 
+  async function revealDocumentsLocation(): Promise<void> {
+    await revealDocumentsFolder();
+  }
+
   function byId(id: string): FolderRecord | undefined {
     return folders.value.find((f) => f.id === id);
   }
 
-  return { folders, isLoading, error, load, create, rename, setPinned, remove, byId };
+  return {
+    folders,
+    isLoading,
+    error,
+    load,
+    create,
+    rename,
+    setPinned,
+    remove,
+    revealDocumentsLocation,
+    byId,
+  };
 });

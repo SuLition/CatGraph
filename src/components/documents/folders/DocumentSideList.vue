@@ -23,7 +23,6 @@ import { useSnippetsStore } from "../../../stores/snippets.store";
 import { useToastStore } from "../../../stores/toast.store";
 import { useWorkspaceStore } from "../../../stores/workspace.store";
 import type { DocumentRecord } from "../../../types/document";
-import type { FolderRecord } from "../../../types/folder";
 
 const folders = useFoldersStore();
 const documents = useDocumentsStore();
@@ -78,6 +77,9 @@ const isEditing = (row: FlatRow) =>
   editing.value?.id === row.id && editing.value?.kind === row.kind;
 
 function startRename(row: FlatRow) {
+  // The virtual "未分类" folder is UI-only (id __unfiled__) and has no backend
+  // record, so it can't be renamed — guard every rename trigger here.
+  if (row.kind === "folder" && row.isUnfiled) return;
   editing.value = { id: row.id, kind: row.kind };
 }
 
@@ -109,26 +111,8 @@ async function createRootFolder() {
   }
 }
 
-async function createSubfolder(parentId: string) {
-  try {
-    const record = await folders.create("新建文件夹", parentId);
-    expand(parentId);
-    startRenameFolder(record.id);
-  } catch (e) {
-    toast.push(errMessage(e), "error");
-  }
-}
-
 function startRenameFolder(id: string) {
   editing.value = { id, kind: "folder" };
-}
-
-async function togglePin(folder: FolderRecord) {
-  try {
-    await folders.setPinned(folder.id, !folder.pinned);
-  } catch (e) {
-    toast.push(errMessage(e), "error");
-  }
 }
 
 function afterDocumentsRemoved(ids: string[]) {
@@ -163,6 +147,14 @@ async function deleteFolderWithConfirm(row: FlatFolderRow) {
   }
 }
 
+async function revealFolderLocation() {
+  try {
+    await folders.revealDocumentsLocation();
+  } catch (e) {
+    toast.push(errMessage(e), "error");
+  }
+}
+
 // ---- Document operations -------------------------------------------------
 async function deleteDocumentWithConfirm(doc: DocumentRecord) {
   const message = `确定删除文档「${doc.title}」吗?\n该操作将永久删除磁盘文件,不可恢复。`;
@@ -171,6 +163,14 @@ async function deleteDocumentWithConfirm(doc: DocumentRecord) {
     await documents.remove(doc.id);
     afterDocumentsRemoved([doc.id]);
     toast.push("文档已删除", "success");
+  } catch (e) {
+    toast.push(errMessage(e), "error");
+  }
+}
+
+async function revealDocumentLocation(doc: DocumentRecord) {
+  try {
+    await documents.reveal(doc.id);
   } catch (e) {
     toast.push(errMessage(e), "error");
   }
@@ -231,10 +231,9 @@ function openContextMenu(row: FlatRow, position: { x: number; y: number }) {
       open: true,
       ...clampMenu(position.x, position.y),
       items: [
-        { key: "new-sub", label: "新建子文件夹" },
         { key: "rename", label: "重命名" },
-        { key: "pin", label: row.folder.pinned ? "取消置顶" : "置顶" },
-        { key: "delete", label: "删除", danger: true, separatorBefore: true },
+        { key: "delete", label: "删除", danger: true },
+        { key: "reveal", label: "打开文件夹所在位置", separatorBefore: true },
       ],
     };
   } else {
@@ -244,8 +243,8 @@ function openContextMenu(row: FlatRow, position: { x: number; y: number }) {
       ...clampMenu(position.x, position.y),
       items: [
         { key: "rename", label: "重命名" },
-        { key: "unfile", label: "移出到未分类", disabled: row.document.folderId == null },
-        { key: "delete", label: "删除", danger: true, separatorBefore: true },
+        { key: "delete", label: "删除", danger: true },
+        { key: "reveal", label: "打开所在位置", separatorBefore: true },
       ],
     };
   }
@@ -255,16 +254,14 @@ function onMenuSelect(key: string) {
   const target = menuTarget.value;
   if (!target) return;
   if (target.kind === "folder") {
-    const folder = target.row.folder;
-    if (key === "new-sub") void createSubfolder(folder.id);
-    else if (key === "rename") startRename(target.row);
-    else if (key === "pin") void togglePin(folder);
+    if (key === "rename") startRename(target.row);
     else if (key === "delete") void deleteFolderWithConfirm(target.row);
+    else if (key === "reveal") void revealFolderLocation();
   } else {
     const doc = target.row.document;
     if (key === "rename") startRename(target.row);
-    else if (key === "unfile") void moveDocument(doc.id, null);
     else if (key === "delete") void deleteDocumentWithConfirm(doc);
+    else if (key === "reveal") void revealDocumentLocation(doc);
   }
 }
 
@@ -277,6 +274,7 @@ function onDragStart(row: FlatRow, event: DragEvent) {
   draggingDocId.value = row.id;
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("application/x-catgraph-document-id", row.id);
     event.dataTransfer.setData("text/plain", row.id);
   }
 }
@@ -290,8 +288,12 @@ function onDropEnter(row: FlatRow) {
   if (row.kind === "folder" && draggingDocId.value) dropTargetId.value = row.id;
 }
 
-function onDropHere(row: FlatRow) {
-  const docId = draggingDocId.value;
+function onDropHere(row: FlatRow, event: DragEvent) {
+  const docId =
+    draggingDocId.value ||
+    event.dataTransfer?.getData("application/x-catgraph-document-id") ||
+    event.dataTransfer?.getData("text/plain") ||
+    null;
   draggingDocId.value = null;
   dropTargetId.value = null;
   if (!docId || row.kind !== "folder") return;
@@ -380,7 +382,7 @@ useExternalFileDrop({
         @drag-start="onDragStart(row, $event)"
         @drag-end="onDragEnd"
         @drop-enter="onDropEnter(row)"
-        @drop-here="onDropHere(row)"
+        @drop-here="onDropHere(row, $event)"
       />
 
       <p v-if="isEmpty" class="empty-hint">

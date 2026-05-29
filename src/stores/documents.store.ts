@@ -5,6 +5,7 @@ import {
   importDocument,
   listDocuments,
   readDocumentBytes,
+  revealDocument,
   renameDocument,
   setDocumentFolder,
 } from "../services/documents.service";
@@ -71,6 +72,10 @@ export const useDocumentsStore = defineStore("documents", () => {
     return readDocumentBytes(id);
   }
 
+  async function reveal(id: string): Promise<void> {
+    await revealDocument(id);
+  }
+
   function byId(id: string): DocumentRecord | undefined {
     return documents.value.find((d) => d.id === id);
   }
@@ -91,6 +96,7 @@ export const useDocumentsStore = defineStore("documents", () => {
     rename,
     dropLocal,
     readBytes,
+    reveal,
     byId,
   };
 });
