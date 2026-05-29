@@ -1,6 +1,6 @@
 <script setup lang="ts">
 export interface SelectionMenuAction {
-  id: "add-to-snippets" | "ask-ai" | "translate" | "search";
+  id: "add-to-snippets" | "ask-ai" | "translate";
   label: string;
 }
 
@@ -17,7 +17,6 @@ const ACTIONS: SelectionMenuAction[] = [
   { id: "add-to-snippets", label: "加入知识库" },
   { id: "ask-ai", label: "询问 AI" },
   { id: "translate", label: "翻译" },
-  { id: "search", label: "搜索" },
 ];
 
 function isDisabled(id: SelectionMenuAction["id"]): boolean {

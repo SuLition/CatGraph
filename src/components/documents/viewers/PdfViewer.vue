@@ -697,10 +697,14 @@ defineExpose({ jumpToAnchor });
   top: 0;
 }
 
+.pdf-viewer :deep(.textLayer) {
+  mix-blend-mode: multiply;
+}
+
 .pdf-viewer :deep(.textLayer ::selection),
 .pdf-viewer :deep(.textLayer span::selection) {
   color: transparent;
-  background: rgb(255 216 77 / 72%);
+  background: rgb(255 223 68 / 58%);
 }
 
 .pdf-toolbar {

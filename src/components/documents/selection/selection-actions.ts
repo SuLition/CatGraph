@@ -3,7 +3,7 @@ import { useSnippetsStore } from "../../../stores/snippets.store";
 import { useToastStore } from "../../../stores/toast.store";
 import type { SnippetAnchor } from "../../../types/snippet";
 
-export type SelectionActionId = "add-to-snippets" | "ask-ai" | "translate" | "search";
+export type SelectionActionId = "add-to-snippets" | "ask-ai" | "translate";
 
 export interface SelectionActionContext {
   text: string;
@@ -35,7 +35,6 @@ export async function dispatchSelectionAction(
 
   const labels: Record<Exclude<SelectionActionId, "add-to-snippets" | "translate">, string> = {
     "ask-ai": "询问 AI",
-    search: "搜索",
   };
   if (id === "translate") return;
   toast.push(`${labels[id]} 功能待接入`, "info");
