@@ -108,21 +108,14 @@ describe("DocumentTreeRow", () => {
     expect(wrapper.emitted("context")).toEqual([[{ x: 120, y: 80 }]]);
   });
 
-  it("emits drag payloads for document rows and drop payloads for folder rows", async () => {
+  it("marks document rows for SortableJS and leaves folder rows non-draggable", async () => {
     const docWrapper = mountRow(documentRow());
     const folderWrapper = mountRow(folderRow());
-    const dragData = {
-      effectAllowed: "",
-      dropEffect: "",
-      setData: () => undefined,
-      getData: () => "",
-    };
 
-    await docWrapper.find(".tree-row").trigger("dragstart", { dataTransfer: dragData });
-    expect(docWrapper.emitted("drag-start")?.[0]?.[0]).toBeInstanceOf(DragEvent);
-
-    await folderWrapper.find(".tree-row").trigger("drop", { dataTransfer: dragData });
-    expect(folderWrapper.emitted("drop-here")?.[0]?.[0]).toBeInstanceOf(DragEvent);
+    expect(docWrapper.find(".tree-row").attributes("data-row-kind")).toBe("document");
+    expect(docWrapper.find(".tree-row").attributes("data-row-id")).toBe("doc-1");
+    expect(folderWrapper.find(".tree-row").attributes("data-row-kind")).toBe("folder");
+    expect(folderWrapper.find(".tree-row").attributes("data-row-id")).toBe("folder-1");
   });
 
   it("selects a document on a single click without double-click rename", async () => {

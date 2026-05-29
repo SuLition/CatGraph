@@ -24,11 +24,6 @@ const emit = defineEmits<{
   (e: "rename-start"): void;
   (e: "rename-commit", value: string): void;
   (e: "rename-cancel"): void;
-  (e: "drag-start", event: DragEvent): void;
-  (e: "drag-end"): void;
-  (e: "drop-enter"): void;
-  (e: "drop-leave"): void;
-  (e: "drop-here", event: DragEvent): void;
 }>();
 
 const inputEl = ref<HTMLInputElement | null>(null);
@@ -67,20 +62,6 @@ function onContext(event: MouseEvent) {
   emit("context", { x: event.clientX, y: event.clientY });
 }
 
-// Drop targets (internal drag): only folder rows accept document drops.
-function onDragOver(event: DragEvent) {
-  if (props.row.kind !== "folder") return;
-  event.preventDefault();
-  if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
-}
-function onDragEnter() {
-  if (props.row.kind === "folder") emit("drop-enter");
-}
-function onDrop(event: DragEvent) {
-  if (props.row.kind !== "folder") return;
-  event.preventDefault();
-  emit("drop-here", event);
-}
 </script>
 
 <template>
@@ -93,16 +74,11 @@ function onDrop(event: DragEvent) {
       'is-drop-target': dropTarget,
     }"
     :style="indentStyle()"
+    :data-row-kind="row.kind"
+    :data-row-id="row.id"
     :data-folder-id="row.kind === 'folder' ? row.id : row.parentId"
-    :draggable="row.kind === 'document' && !editing"
     @click="onRowClick"
     @contextmenu.prevent="onContext"
-    @dragstart="emit('drag-start', $event)"
-    @dragend="emit('drag-end')"
-    @dragover="onDragOver"
-    @dragenter="onDragEnter"
-    @dragleave="emit('drop-leave')"
-    @drop="onDrop"
   >
     <!-- Folder row -->
     <template v-if="row.kind === 'folder'">

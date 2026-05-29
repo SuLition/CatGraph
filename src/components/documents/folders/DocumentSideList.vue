@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { FolderAdd20Regular, Search20Regular } from "@vicons/fluent";
+import Sortable, { type MoveEvent, type SortableEvent } from "sortablejs";
 import DocumentImportButton from "../DocumentImportButton.vue";
 import ContextMenu from "./ContextMenu.vue";
 import type { ContextMenuItem } from "./context-menu";
@@ -31,9 +32,16 @@ const workspace = useWorkspaceStore();
 const toast = useToastStore();
 
 const config = SIDE_LISTS.documents;
+const treeEl = ref<HTMLElement | null>(null);
+let sortable: Sortable | null = null;
 
 onMounted(() => {
   if (folders.folders.length === 0) void folders.load();
+});
+
+onBeforeUnmount(() => {
+  sortable?.destroy();
+  sortable = null;
 });
 
 // ---- Tree + expand state -------------------------------------------------
@@ -225,14 +233,13 @@ function clampMenu(x: number, y: number) {
 
 function openContextMenu(row: FlatRow, position: { x: number; y: number }) {
   if (row.kind === "folder") {
-    if (row.isUnfiled) return;
     menuTarget.value = { kind: "folder", row };
     menu.value = {
       open: true,
       ...clampMenu(position.x, position.y),
       items: [
-        { key: "rename", label: "重命名" },
-        { key: "delete", label: "删除", danger: true },
+        { key: "rename", label: "重命名", disabled: row.isUnfiled },
+        { key: "delete", label: "删除", danger: true, disabled: row.isUnfiled },
         { key: "reveal", label: "打开文件夹所在位置", separatorBefore: true },
       ],
     };
@@ -254,6 +261,7 @@ function onMenuSelect(key: string) {
   const target = menuTarget.value;
   if (!target) return;
   if (target.kind === "folder") {
+    if (target.row.isUnfiled && key !== "reveal") return;
     if (key === "rename") startRename(target.row);
     else if (key === "delete") void deleteFolderWithConfirm(target.row);
     else if (key === "reveal") void revealFolderLocation();
@@ -266,45 +274,69 @@ function onMenuSelect(key: string) {
 }
 
 // ---- Drag & drop ---------------------------------------------------------
-const draggingDocId = ref<string | null>(null);
 const dropTargetId = ref<string | null>(null);
 
-function onDragStart(row: FlatRow, event: DragEvent) {
-  if (row.kind !== "document") return;
-  draggingDocId.value = row.id;
-  if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = "move";
-    event.dataTransfer.setData("application/x-catgraph-document-id", row.id);
-    event.dataTransfer.setData("text/plain", row.id);
-  }
-}
-
-function onDragEnd() {
-  draggingDocId.value = null;
-  dropTargetId.value = null;
-}
-
-function onDropEnter(row: FlatRow) {
-  if (row.kind === "folder" && draggingDocId.value) dropTargetId.value = row.id;
-}
-
-function onDropHere(row: FlatRow, event: DragEvent) {
-  const docId =
-    draggingDocId.value ||
-    event.dataTransfer?.getData("application/x-catgraph-document-id") ||
-    event.dataTransfer?.getData("text/plain") ||
-    null;
-  draggingDocId.value = null;
-  dropTargetId.value = null;
-  if (!docId || row.kind !== "folder") return;
-  void moveDocument(docId, row.isUnfiled ? null : row.id);
-}
-
-// External OS file drop.
-function resolveFolderId(clientX: number, clientY: number): string | null {
+function folderIdFromPoint(clientX: number, clientY: number): string | null {
   const el = document.elementFromPoint(clientX, clientY);
   const holder = el?.closest<HTMLElement>("[data-folder-id]");
   return holder?.getAttribute("data-folder-id") ?? null;
+}
+
+function clearSortableDropState() {
+  dropTargetId.value = null;
+}
+
+function eventPoint(source: Event | undefined): { x: number; y: number } | null {
+  if (source && "clientX" in source && "clientY" in source) {
+    const pointer = source as MouseEvent | PointerEvent;
+    return { x: pointer.clientX, y: pointer.clientY };
+  }
+  return null;
+}
+
+function onSortableMove(_event: MoveEvent, originalEvent: Event) {
+  const point = eventPoint(originalEvent);
+  dropTargetId.value = point ? folderIdFromPoint(point.x, point.y) : null;
+  return true;
+}
+
+function onSortableEnd(event: SortableEvent) {
+  const docId = event.item.dataset.rowId;
+  const source = (event as SortableEvent & { originalEvent?: Event }).originalEvent;
+  const point = eventPoint(source);
+  const targetId = point ? folderIdFromPoint(point.x, point.y) : dropTargetId.value;
+  clearSortableDropState();
+  if (!docId || !targetId) return;
+  void moveDocument(docId, targetId === UNFILED_FOLDER_ID ? null : targetId);
+}
+
+watch(
+  () => treeEl.value,
+  async (el) => {
+    sortable?.destroy();
+    sortable = null;
+    if (!el) return;
+    await nextTick();
+    sortable = Sortable.create(el, {
+      animation: 120,
+      draggable: "[data-row-kind='document']",
+      forceFallback: true,
+      fallbackOnBody: true,
+      fallbackTolerance: 4,
+      ghostClass: "tree-row-ghost",
+      chosenClass: "tree-row-chosen",
+      dragClass: "tree-row-drag",
+      onMove: onSortableMove,
+      onEnd: onSortableEnd,
+      onUnchoose: clearSortableDropState,
+    });
+  },
+  { flush: "post", immediate: true },
+);
+
+// External OS file drop.
+function resolveFolderId(clientX: number, clientY: number): string | null {
+  return folderIdFromPoint(clientX, clientY);
 }
 
 async function importExternal(paths: string[], rawFolderId: string | null) {
@@ -364,7 +396,7 @@ useExternalFileDrop({
       </div>
     </header>
 
-    <div class="tree">
+    <div ref="treeEl" class="tree">
       <DocumentTreeRow
         v-for="row in flatRows"
         :key="`${row.kind}-${row.id}`"
@@ -379,10 +411,6 @@ useExternalFileDrop({
         @rename-start="startRename(row)"
         @rename-commit="commitRename"
         @rename-cancel="cancelRename"
-        @drag-start="onDragStart(row, $event)"
-        @drag-end="onDragEnd"
-        @drop-enter="onDropEnter(row)"
-        @drop-here="onDropHere(row, $event)"
       />
 
       <p v-if="isEmpty" class="empty-hint">

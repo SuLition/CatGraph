@@ -60,3 +60,12 @@ body.is-resizing-side-list * {
   cursor: col-resize !important;
   user-select: none !important;
 }
+
+.tree-row-ghost {
+  opacity: 0.35;
+}
+
+.tree-row-chosen,
+.tree-row-drag {
+  user-select: none;
+}
