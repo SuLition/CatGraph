@@ -11,7 +11,12 @@ import {
 } from "vue";
 import { VuePDF, usePDF } from "@tato30/vue-pdf";
 import "@tato30/vue-pdf/style.css";
-import { PanelRightContract20Regular, PanelRightExpand20Regular } from "@vicons/fluent";
+import {
+  ChevronDown20Regular,
+  ChevronUp20Regular,
+  PanelRightContract20Regular,
+  PanelRightExpand20Regular,
+} from "@vicons/fluent";
 import { useDocumentsStore } from "../../../stores/documents.store";
 import { useSnippetPanel } from "../../../composables/useSnippetPanel";
 import type { SnippetLocator } from "../../../types/snippet";
@@ -21,7 +26,7 @@ const { isCollapsed: panelCollapsed, toggle: togglePanel } = useSnippetPanel();
 
 const PAGE_GUTTER = 32;
 
-const props = defineProps<{ documentId: string }>();
+const props = defineProps<{ documentId: string; active?: boolean }>();
 
 const documents = useDocumentsStore();
 const scrollEl = useTemplateRef<HTMLElement>("scrollEl");
@@ -210,6 +215,7 @@ async function loadPdf() {
   submittedSearchQuery.value = "";
   activeSearchIndex.value = -1;
   searchPages.value = [];
+  window.getSelection()?.removeAllRanges();
 
   try {
     const bytes = await documents.readBytes(props.documentId);
@@ -331,7 +337,7 @@ async function jumpToSearchMatch(index: number) {
   if (!range) return;
 
   scrollRangeIntoView(range);
-  selectRangeTemporarily(range, null);
+  applyProgrammaticSelection(range);
 }
 
 async function jumpToAnchor(locator: SnippetLocator) {
@@ -349,7 +355,7 @@ async function jumpToAnchor(locator: SnippetLocator) {
   if (!range) return;
 
   scrollRangeIntoView(range);
-  selectRangeTemporarily(range);
+  applyProgrammaticSelection(range);
 }
 
 async function waitForPage(page: number): Promise<HTMLElement | null> {
@@ -363,8 +369,10 @@ async function waitForPage(page: number): Promise<HTMLElement | null> {
   return findPageElement(page);
 }
 
+// 必须在本实例的滚动容器内查找:多标签同时挂载多份 PdfViewer 时,
+// document.querySelector 会命中最早打开标签的同号页,导致跳到错误的 PDF。
 function findPageElement(page: number): HTMLElement | null {
-  return document.querySelector<HTMLElement>(`.pdf-page[data-page-number="${page}"]`);
+  return scrollEl.value?.querySelector<HTMLElement>(`.pdf-page[data-page-number="${page}"]`) ?? null;
 }
 
 function createTextLayerRange(
@@ -434,13 +442,16 @@ function findScrollableParent(node: Node): HTMLElement | null {
   return null;
 }
 
-function selectRangeTemporarily(range: Range, clearAfterMs: number | null = 1800) {
+// 程序化设置原生选区，让 .textLayer ::selection 的样式自然命中——
+// 颜色与用户拖选完全一致。dispatch catgraph:programmatic-selection 通知
+// SelectionHost 抑制选区菜单；180ms 延迟用来避开触发动作的 pointerup
+// 异步抵达的 selectionchange，那个事件会瞬间清空我们刚 addRange 的内容。
+function applyProgrammaticSelection(range: Range) {
   window.dispatchEvent(new CustomEvent("catgraph:programmatic-selection"));
   window.setTimeout(() => {
     const selection = window.getSelection();
     selection?.removeAllRanges();
     selection?.addRange(range);
-    if (clearAfterMs !== null) window.setTimeout(() => selection?.removeAllRanges(), clearAfterMs);
   }, 180);
 }
 
@@ -512,6 +523,8 @@ function scrollPreviewPage(direction: 1 | -1) {
 }
 
 function onKeyDown(event: KeyboardEvent) {
+  // 多标签下会有多个常驻 PdfViewer 同时监听 document,只让当前激活标签响应。
+  if (props.active === false) return;
   if (event.defaultPrevented) return;
 
   const key = event.key.toLowerCase();
@@ -547,10 +560,19 @@ function onKeyDown(event: KeyboardEvent) {
     return;
   }
 
-  if (isSearchOpen.value && event.key === "Escape") {
-    event.preventDefault();
-    closeSearch();
-    return;
+  if (event.key === "Escape") {
+    if (isSearchOpen.value) {
+      event.preventDefault();
+      closeSearch();
+      return;
+    }
+    // 收掉程序化设置的选区(也顺手清掉用户的拖选),匹配「Esc 收掉高亮」的语义。
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0 && selection.toString().length > 0) {
+      event.preventDefault();
+      selection.removeAllRanges();
+      return;
+    }
   }
 
   if (isEditableTarget(event.target)) return;
@@ -597,7 +619,6 @@ defineExpose({ jumpToAnchor });
       >
         适宽
       </button>
-      <button type="button" :disabled="isLoading || !pdf" @click="openSearch">搜索</button>
       <span v-if="pages > 0" class="page-info">{{ pages }} 页</span>
       <button
         class="snippet-toggle"
@@ -620,23 +641,27 @@ defineExpose({ jumpToAnchor });
         placeholder="搜索 PDF"
         @input="onSearchInput"
         @keydown.enter.prevent="confirmSearch"
-        @keydown.esc.prevent="closeSearch"
+        @keydown.esc.prevent.stop="closeSearch"
       />
       <button
         type="button"
-        :disabled="isSearchIndexing || !searchQuery.trim()"
-        @click="confirmSearch"
+        class="pdf-search-nav"
+        aria-label="上一个匹配"
+        :disabled="!searchMatches.length"
+        @click="goToSearchResult(-1)"
       >
-        确认
+        <ChevronUp20Regular class="pdf-search-icon" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        class="pdf-search-nav"
+        aria-label="下一个匹配"
+        :disabled="!searchMatches.length"
+        @click="goToSearchResult(1)"
+      >
+        <ChevronDown20Regular class="pdf-search-icon" aria-hidden="true" />
       </button>
       <span class="pdf-search-status">{{ searchStatus }}</span>
-      <button type="button" :disabled="!searchMatches.length" @click="goToSearchResult(-1)">
-        上
-      </button>
-      <button type="button" :disabled="!searchMatches.length" @click="goToSearchResult(1)">
-        下
-      </button>
-      <button type="button" @click="closeSearch">关闭</button>
     </div>
 
     <div ref="scrollEl" class="pdf-pages" @wheel="onPreviewWheel">
@@ -692,9 +717,12 @@ defineExpose({ jumpToAnchor });
 /* 修复选区抖动：拖选时鼠标经过文字 span 之间的空隙，浏览器会把选区甩到远处再弹回。
    pdf.js 用 endOfContent 兜底层在按住鼠标时铺满整页来挡住这些空隙，但 @tato30/vue-pdf
    的 TextLayer 仍按旧约定给它加 `.active` 类，而打包进来的 pdf.js 5.7 样式只认新写法
-   `.textLayer.selecting .endOfContent`，两者对不上，兜底层从未展开。这里补上 `.active`。 */
+   `.textLayer.selecting .endOfContent`，两者对不上，兜底层从未展开。这里补上 `.active`。
+   pointer-events:none：endOfContent 在 DOM 末尾，鼠标落在空白处时浏览器按 DOM 顺序把选区
+   延伸到整页末尾（表现为全选）；穿透后事件落到 textLayer div，改为按坐标就近选中最近文字。 */
 .pdf-viewer :deep(.textLayer .endOfContent.active) {
   top: 0;
+  pointer-events: none;
 }
 
 .pdf-viewer :deep(.textLayer) {
@@ -752,39 +780,23 @@ defineExpose({ jumpToAnchor });
   z-index: 20;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
+  gap: 6px;
+  padding: 6px;
   border: 1px solid var(--border-control-color);
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--panel-background-color);
   box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
 }
 
-.pdf-search-popover button {
-  height: 30px;
-  padding: 0 10px;
-  border: 1px solid var(--border-control-color);
-  border-radius: 4px;
-  background: var(--surface-control-color);
-  color: var(--text-color);
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.pdf-search-popover button:disabled {
-  opacity: 0.45;
-  cursor: progress;
-}
-
 .pdf-search-input {
-  width: 240px;
-  height: 32px;
-  padding: 0 11px;
+  width: 200px;
+  height: 28px;
+  padding: 0 10px;
   border: 1px solid var(--border-control-color);
   border-radius: 6px;
   background: var(--content-background-color);
   color: var(--text-color);
-  font-size: 14px;
+  font-size: 13px;
   outline: none;
 }
 
@@ -793,11 +805,35 @@ defineExpose({ jumpToAnchor });
 }
 
 .pdf-search-status {
-  min-width: 46px;
+  min-width: 38px;
   text-align: center;
   font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted-text-color);
+}
+
+.pdf-search-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border-control-color);
+  border-radius: 6px;
+  background: var(--surface-control-color);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.pdf-search-nav:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pdf-search-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .page-info {

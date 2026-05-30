@@ -4,7 +4,11 @@ import { RouterView } from "vue-router";
 
 <template>
   <section class="content-area">
-    <RouterView />
+    <RouterView v-slot="{ Component }">
+      <KeepAlive :include="['DocumentsView']">
+        <component :is="Component" />
+      </KeepAlive>
+    </RouterView>
   </section>
 </template>
 

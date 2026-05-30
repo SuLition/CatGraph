@@ -6,12 +6,20 @@ import DocumentEmpty from "./DocumentEmpty.vue";
 import SelectionHost from "./selection/SelectionHost.vue";
 import { getViewer } from "./viewers/registry";
 
-const props = defineProps<{ documentId: string | null }>();
+const props = defineProps<{ documentId: string | null; active?: boolean }>();
 
 const documents = useDocumentsStore();
 const record = computed(() => (props.documentId ? documents.byId(props.documentId) : null));
 const viewer = computed(() => (record.value ? getViewer(record.value.kind) : null));
 const viewerRef = ref<{ jumpToAnchor?: (locator: SnippetLocator) => Promise<void> } | null>(null);
+
+// 只有 PdfViewer 需要 active(用于隔离其全局快捷键监听),其余 viewer 不接收该 prop。
+const viewerProps = computed<Record<string, unknown>>(() => {
+  if (!record.value) return {};
+  const base: Record<string, unknown> = { documentId: record.value.id };
+  if (record.value.kind === "pdf") base.active = props.active ?? false;
+  return base;
+});
 
 function jumpTo(locator: SnippetLocator) {
   void viewerRef.value?.jumpToAnchor?.(locator);
@@ -28,7 +36,7 @@ defineExpose({ jumpTo });
         :document-id="record.id"
         :mode="record.kind === 'pdf' ? 'pdf' : 'text'"
       >
-        <component :is="viewer" ref="viewerRef" :key="record.id" :document-id="record.id" />
+        <component :is="viewer" ref="viewerRef" :key="record.id" v-bind="viewerProps" />
       </SelectionHost>
       <DocumentEmpty v-else :has-documents="documents.documents.length > 0" />
     </main>

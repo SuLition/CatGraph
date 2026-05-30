@@ -75,12 +75,12 @@ async function jumpToAnchor(locator: SnippetLocator) {
     behavior: "smooth",
   });
 
+  // 程序化设选区,样式由 ::selection 接管,行为与用户拖选一致(不自动收掉)。
   window.dispatchEvent(new CustomEvent("catgraph:programmatic-selection"));
   window.setTimeout(() => {
     const selection = window.getSelection();
     selection?.removeAllRanges();
     selection?.addRange(range);
-    window.setTimeout(() => selection?.removeAllRanges(), 1800);
   }, 180);
 }
 

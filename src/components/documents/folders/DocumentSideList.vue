@@ -22,13 +22,13 @@ import { useDocumentsStore } from "../../../stores/documents.store";
 import { useFoldersStore } from "../../../stores/folders.store";
 import { useSnippetsStore } from "../../../stores/snippets.store";
 import { useToastStore } from "../../../stores/toast.store";
-import { useWorkspaceStore } from "../../../stores/workspace.store";
+import { useDocumentTabsStore } from "../../../stores/document-tabs.store";
 import type { DocumentRecord } from "../../../types/document";
 
 const folders = useFoldersStore();
 const documents = useDocumentsStore();
 const snippets = useSnippetsStore();
-const workspace = useWorkspaceStore();
+const tabs = useDocumentTabsStore();
 const toast = useToastStore();
 
 const config = SIDE_LISTS.documents;
@@ -55,7 +55,7 @@ const isEmpty = computed(
   () => folders.folders.length === 0 && documents.documents.length === 0,
 );
 
-const selectedDocId = computed(() => workspace.selectedSideListIds.documents);
+const selectedDocId = computed(() => tabs.activeId);
 
 function toggleExpand(id: string) {
   const set = new Set(collapsedIds.value);
@@ -72,7 +72,7 @@ function expand(id: string) {
 
 // ---- Selection -----------------------------------------------------------
 function selectDocument(id: string) {
-  workspace.setSelectedSideListItem(id);
+  tabs.open(id);
 }
 
 function errMessage(e: unknown): string {
@@ -125,8 +125,7 @@ function startRenameFolder(id: string) {
 
 function afterDocumentsRemoved(ids: string[]) {
   if (ids.length === 0) return;
-  const selected = workspace.selectedSideListIds.documents;
-  if (selected && ids.includes(selected)) workspace.setSelectedSideListItem("");
+  for (const id of ids) tabs.close(id);
   void snippets.load();
 }
 
@@ -196,7 +195,7 @@ async function moveDocument(docId: string, folderId: string | null) {
 }
 
 function handleImported(id: string) {
-  workspace.setSelectedSideListItem(id);
+  tabs.open(id);
 }
 
 async function confirmDestructive(message: string, title: string): Promise<boolean> {
@@ -355,7 +354,7 @@ async function importExternal(paths: string[], rawFolderId: string | null) {
   }
   if (ok > 0 && lastId) {
     if (folderId) expand(folderId);
-    workspace.setSelectedSideListItem(lastId);
+    tabs.open(lastId);
     const where = folderId ? `「${folders.byId(folderId)?.name ?? ""}」` : "未分类";
     toast.push(`已导入 ${ok} 个文档到${where}`, "success");
   }
